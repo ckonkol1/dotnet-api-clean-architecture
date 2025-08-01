@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlantTracker.Application\PlantTracker.Application.csproj" />
-    <ProjectReference Include="..\PlantTracker.Core\PlantTracker.Core.csproj" />
+    <ProjectReference Include="..\..\src\PlantTracker.Core\PlantTracker.Core.csproj" />
+    <ProjectReference Include="..\..\src\PlantTracker.WebApi\PlantTracker.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
