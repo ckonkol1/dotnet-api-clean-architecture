@@ -18,8 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PlantTracker.Core\PlantTracker.Core.csproj" />
     <ProjectReference Include="..\..\src\PlantTracker.Infrasturcture\PlantTracker.Infrastructure.csproj" />
-    <ProjectReference Include="..\PlantTracker.Core\PlantTracker.Core.csproj" />
-    <ProjectReference Include="..\PlantTracker.Infrasturcture\PlantTracker.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

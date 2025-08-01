@@ -1,4 +1,4 @@
-﻿namespace PlantTracker.Core.Models;
+namespace PlantTracker.Core.Models;
 
 public class PlantResponseModel
 {

@@ -1,4 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 using PlantTracker.Core.Models;
 
 namespace PlantTracker.Infrastructure.Models;
