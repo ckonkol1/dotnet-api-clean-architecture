@@ -11,7 +11,7 @@ on:
 env:
   DOTNET_VERSION: '9.0.x'
   SOLUTION_DIR: './src/PlantTracker.sln'
-  TEST_DIR: './test/'
+  TEST_DIR: './test/**/*.UnitTests.csproj'
 
 jobs:
   test:
@@ -34,7 +34,7 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
       
     - name: Run unit tests
-      run: dotnet test test/**/*.UnitTests.csproj --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.TEST_DIR }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Upload test results
       uses: actions/upload-artifact@v4
