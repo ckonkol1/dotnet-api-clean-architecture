@@ -31,10 +31,11 @@ jobs:
         
       - name: Build
         run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
-          
+
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    needs: build
     
     steps:    
     - name: Run unit tests
