@@ -13,49 +13,25 @@ env:
   SOLUTION_DIR: './src/PlantTracker.sln'
 
 jobs:
-  build:
-    name: Run Build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-          
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_DIR }}
-        
-      - name: Build
-        run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            **/bin/Release/
-            **/obj/  
-
   test:
-    name: Run Unit Tests
+    name: Build and Run Unit Tests
     runs-on: ubuntu-latest
-    needs: build
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
-    
-    # Download build artifacts
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
       with:
-        name: build-artifacts
-            
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_DIR }}
+      
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
+      
     - name: Run unit tests
       run: |
         dotnet test ${{ env.SOLUTION_DIR }} \
