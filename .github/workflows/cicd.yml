@@ -34,7 +34,7 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
       
     - name: Run unit tests
-      run: dotnet test ${{ env.TEST_DIR }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.SOLUTION_DIR }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Upload test results
       uses: actions/upload-artifact@v4
