@@ -11,7 +11,6 @@ on:
 env:
   DOTNET_VERSION: '9.0.x'
   SOLUTION_DIR: './src/PlantTracker.sln'
-  TEST_DIR: './test/**/*.UnitTests.csproj'
 
 jobs:
   test:
@@ -34,18 +33,20 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_DIR }} --no-restore --configuration Release
       
     - name: Run unit tests
-      run: dotnet test ${{ env.SOLUTION_DIR }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
-      
+      run: |
+        dotnet test ${{ env.SOLUTION_DIR }} \
+          --no-build \
+          --configuration Release \
+          --verbosity normal \
+          --collect:"XPlat Code Coverage" \
+          --logger "trx;LogFileName=test-results.trx" \
+          --results-directory TestResults
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results
-        path: TestResults/
-        
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      if: always()
-      with:
-        files: TestResults/*/coverage.cobertura.xml
-        fail_ci_if_error: false
+        name: test-results-${{ github.run_number }}
+        path: |
+          TestResults/**/*.trx
+          TestResults/**/*.xml
