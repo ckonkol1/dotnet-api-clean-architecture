@@ -28,7 +28,7 @@ namespace PlantTracker.WebApi.UnitTests
             {
                 var expectedPlants = new List<PlantResponseModel>
                 {
-                    new PlantResponseModel
+                    new()
                     {
                         Id = new Guid("ec60872a-cad7-443b-ac94-4bb24a275633"),
                         CommonName = "Zebra Plant",
@@ -37,7 +37,7 @@ namespace PlantTracker.WebApi.UnitTests
                         Duration = "Perennial",
                         Url = "https://plants.usda.gov/plant-profile/CAZE",
                     },
-                    new PlantResponseModel
+                    new()
                     {
                         Id = new Guid("e19588bb-ecf0-480b-988d-f7c74de6f935"),
                         CommonName = "Arizona hedgehog cactus",
@@ -67,10 +67,8 @@ namespace PlantTracker.WebApi.UnitTests
             [Fact]
             public async Task GetAllPlants_WithEmptyList_ReturnsNotFound()
             {
-                var emptyPlants = new List<PlantResponseModel>();
-
                 _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync(emptyPlants);
+                    .ReturnsAsync((List<PlantResponseModel>) []);
 
                 var result = await _controller.GetAllPlants();
 
@@ -84,7 +82,7 @@ namespace PlantTracker.WebApi.UnitTests
             public async Task GetAllPlants_WithNullResult_ReturnsNotFound()
             {
                 _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync(new List<PlantResponseModel>() { });
+                    .ReturnsAsync((List<PlantResponseModel>) []);
 
                 var result = await _controller.GetAllPlants();
 
@@ -169,7 +167,7 @@ namespace PlantTracker.WebApi.UnitTests
             {
                 var singlePlant = new List<PlantResponseModel>
                 {
-                    new PlantResponseModel
+                    new()
                     {
                         Id = new Guid("ec60872a-cad7-443b-ac94-4bb24a275633"),
                         CommonName = "Zebra Plant",
@@ -226,9 +224,9 @@ namespace PlantTracker.WebApi.UnitTests
                     x => x.Log(
                         expectedLogLevel,
                         It.IsAny<EventId>(),
-                        It.Is<It.IsAnyType>((v, t) => v.ToString().Contains(expectedMessage)),
+                        It.Is<It.IsAnyType>((v, t) => (v.ToString() ?? string.Empty).Contains(expectedMessage)),
                         It.IsAny<Exception>(),
-                        It.IsAny<Func<It.IsAnyType, Exception, string>>()), (Times)times);
+                        It.IsAny<Func<It.IsAnyType, Exception?, string>>()), (Times)times);
             }
         }
     }
