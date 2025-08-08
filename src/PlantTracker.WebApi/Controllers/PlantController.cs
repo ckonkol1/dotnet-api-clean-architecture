@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
 using System.Net;
@@ -6,7 +7,8 @@ using System.Net;
 namespace PlantTracker.WebApi.Controllers
 {
     [ApiController]
-    [Route("/[controller]")]
+    [ApiVersion(1)]
+    [Route("/v{v:apiVersion}/[controller]")]
     [Produces("application/json")]
     public class PlantController(ILogger<PlantController> logger, IPlantService plantService) : ControllerBase
     {

@@ -1,6 +1,6 @@
 @PlantTracker_HostAddress = http://localhost:5150
 
-GET {{PlantTracker_HostAddress}}/plant/
+GET {{PlantTracker_HostAddress}}/v1/plant/
 Accept: application/json
 
 ###
