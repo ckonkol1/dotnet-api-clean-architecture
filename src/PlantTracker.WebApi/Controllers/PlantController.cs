@@ -22,9 +22,9 @@ namespace PlantTracker.WebApi.Controllers
             var errorResponse = new ErrorResponse();
             try
             {
-                result = (await plantService.GetAllPlantsAsync()).ToList();
+                result = [.. (await plantService.GetAllPlantsAsync())];
 
-                if (result?.Any() != true)
+                if (result?.Count == 0)
                 {
                     return NotFound();
                 }
