@@ -1,7 +1,7 @@
 using Asp.Versioning;
-using Microsoft.OpenApi.Models;
 using PlantTracker.Application.DependencyInjection;
 using PlantTracker.Infrastructure.DependencyInjection;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,15 +26,15 @@ builder.Services.AddControllers();
 builder.Services.RegisterInfrastructure(builder.Configuration)
     .RegisterApplication();
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1",
-        new OpenApiInfo
-        {
-            Title = "PlantTrack.WebAPI",
-            Version = "v1"
-        });
-});
+//builder.Services.AddSwaggerGen(c =>
+//{
+//    c.SwaggerDoc("v1",
+//        new OpenApiInfo
+//        {
+//            Title = "PlantTracker.WebAPI",
+//            Version = "v1"
+//        });
+//});
 
 var app = builder.Build();
 
@@ -43,8 +43,13 @@ app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("PlantTracker.WebApi");
+        options.WithTheme(ScalarTheme.DeepSpace);
+        options.WithSidebar(false);
+    });
 }
 
 //app.UseAuthorization();

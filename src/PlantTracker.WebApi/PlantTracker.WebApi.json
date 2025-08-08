@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PlantTracker.WebApi | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/Plant": {
+      "get": {
+        "tags": [
+          "Plant"
+        ],
+        "summary": "Get All Plants",
+        "description": "This endpoint returns all plants stored in the database",
+        "operationId": "GetAllPlants",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantResponseModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlantResponseModel": {
+        "required": [
+          "id",
+          "commonName",
+          "scientificName",
+          "duration",
+          "age",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generated Id for the plant",
+            "format": "uuid"
+          },
+          "commonName": {
+            "type": "string",
+            "description": "Common plant name"
+          },
+          "scientificName": {
+            "type": "string",
+            "description": "Scientific Plant Name"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Duration of plant. Perennial or Annual"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Age of plant in years",
+            "format": "int32"
+          },
+          "url": {
+            "type": "string",
+            "description": "Url to usda.gov plant documenation"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Plant"
+    }
+  ]
+}
