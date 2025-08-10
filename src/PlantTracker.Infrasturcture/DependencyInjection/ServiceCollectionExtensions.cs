@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantTracker.Core.Interfaces;
@@ -17,7 +18,13 @@ public static class ServiceCollectionExtensions
 
         return services.AddSingleton<IAmazonDynamoDB>(provider =>
             {
-                var awsDynamoDbConfig = new AmazonDynamoDBConfig();
+                var awsDynamoDbConfig = new AmazonDynamoDBConfig
+                {
+                    Timeout = TimeSpan.FromSeconds(10),
+                    ConnectTimeout = TimeSpan.FromSeconds(10),
+                    MaxErrorRetry = 2,
+                    RetryMode = RequestRetryMode.Standard
+                };
 
                 if (!string.IsNullOrEmpty(awsConfig.Region))
                 {

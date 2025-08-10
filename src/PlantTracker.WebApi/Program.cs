@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using PlantTracker.Application.DependencyInjection;
 using PlantTracker.Infrastructure.DependencyInjection;
+using PlantTracker.WebApi.Middleware;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,20 +24,16 @@ builder.Services.AddApiVersioning(options =>
     });
 
 builder.Services.AddControllers();
-builder.Services.RegisterInfrastructure(builder.Configuration)
-    .RegisterApplication();
-builder.Services.AddOpenApi();
-//builder.Services.AddSwaggerGen(c =>
-//{
-//    c.SwaggerDoc("v1",
-//        new OpenApiInfo
-//        {
-//            Title = "PlantTracker.WebAPI",
-//            Version = "v1"
-//        });
-//});
+builder.Services
+    .RegisterInfrastructure(builder.Configuration)
+    .RegisterApplication()
+    .AddOpenApi()
+    .AddExceptionHandler<GlobalExceptionHandler>()
+    .AddProblemDetails();
 
 var app = builder.Build();
+app.UseStatusCodePages();
+app.UseExceptionHandler();
 
 app.MapControllers();
 app.UseHttpsRedirection();

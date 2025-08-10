@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
-using System.Net;
 
 namespace PlantTracker.WebApi.Controllers;
 
@@ -17,6 +16,10 @@ namespace PlantTracker.WebApi.Controllers;
 [Produces("application/json")]
 public class PlantController(ILogger<PlantController> logger, IPlantService plantService) : ControllerBase
 {
+    /// <summary>
+    /// Get All Plants
+    /// </summary>
+    /// <returns>A list of all the Plants</returns>
     [EndpointSummary("Get All Plants")]
     [EndpointDescription("This endpoint returns all plants stored in the database")]
     [EndpointName("GetAllPlants")]
@@ -26,24 +29,13 @@ public class PlantController(ILogger<PlantController> logger, IPlantService plan
     [HttpGet(Name = "GetAllPlants")]
     public async Task<ActionResult<IEnumerable<PlantResponseModel>>> GetAllPlants()
     {
-        var result = new List<PlantResponseModel>();
-        var errorResponse = new ErrorResponse();
-        try
-        {
-            result = [.. (await plantService.GetAllPlantsAsync())];
+        List<PlantResponseModel> result = [.. (await plantService.GetAllPlantsAsync())];
 
-            if (result?.Count == 0)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
-        catch (Exception ex)
+        if (result?.Count == 0)
         {
-            logger.LogInformation("Error Occurred");
-            errorResponse.ErrorMessages.Add(ex.Message);
-            return StatusCode((int)HttpStatusCode.InternalServerError, result);
+            return NotFound("No plants were found.");
         }
+
+        return Ok(result);
     }
 }
