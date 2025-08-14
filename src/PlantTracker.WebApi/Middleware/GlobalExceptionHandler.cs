@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Amazon.DynamoDBv2.Model;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
 
 namespace PlantTracker.WebApi.Middleware;
 
@@ -10,33 +14,48 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
         logger.LogError(exception, $"Error Occurred. TraceId: {traceId}");
-        int statusCode;
-        string title;
 
-
-        switch (exception)
+        var problemDetails = exception switch
         {
-            case ArgumentException:
-                statusCode = 400;
-                title = $"Invalid Argument Provided {exception.Message}";
-                break;
-            case UnauthorizedAccessException:
-                statusCode = StatusCodes.Status401Unauthorized;
-                title = "Unauthorized Access";
-                break;
-            default:
-                statusCode = StatusCodes.Status500InternalServerError;
-                title = "Internal Server Error Occurred.";
-                break;
-        }
+            ArgumentException => new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid Argument Provided.",
+                Detail = exception.Message
+            },
+            ValidationException => new ProblemDetails
+            {
+                Status = 400,
+                Title = "Validation Error",
+                Detail = exception.Message
+            },
+            ResourceNotFoundException => new ProblemDetails
+            {
+                Status = 404,
+                Title = "Resource Not Found.",
+                Detail = exception.Message
+            },
+            UnauthorizedAccessException => new ProblemDetails()
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized Access",
+                Detail = exception.Message
+            },
+            _ => new ProblemDetails()
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "Internal Server Error Occurred.",
+                Detail = exception?.Message
+            }
+        };
 
         await Results.Problem(
-            title: title,
-            statusCode: statusCode,
+            title: problemDetails.Title,
+            statusCode: problemDetails.Status,
             extensions: new Dictionary<string, object?>()
             {
                 { "traceId", traceId },
-                { "error", exception.Message }
+                { "error", exception?.Message }
             }).ExecuteAsync(httpContext);
 
         return true;

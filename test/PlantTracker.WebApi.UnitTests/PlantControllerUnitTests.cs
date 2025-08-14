@@ -13,14 +13,14 @@ namespace PlantTracker.WebApi.UnitTests
         public class PlantsControllerTests
         {
             private readonly Mock<IPlantService> _mockPlantService;
-            private readonly Mock<ILogger<PlantController>> _mockLogger;
-            private readonly PlantController _controller;
+            private readonly Mock<ILogger<PlantsController>> _mockLogger;
+            private readonly PlantsController _controller;
 
             public PlantsControllerTests()
             {
                 _mockPlantService = new Mock<IPlantService>();
-                _mockLogger = new Mock<ILogger<PlantController>>();
-                _controller = new PlantController(_mockLogger.Object, _mockPlantService.Object);
+                _mockLogger = new Mock<ILogger<PlantsController>>();
+                _controller = new PlantsController(_mockLogger.Object, _mockPlantService.Object);
             }
 
             [Fact]
@@ -68,7 +68,7 @@ namespace PlantTracker.WebApi.UnitTests
             public async Task GetAllPlants_WithEmptyList_ReturnsNotFound()
             {
                 _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync((List<PlantResponseModel>) []);
+                    .ReturnsAsync((List<PlantResponseModel>)[]);
 
                 var result = await _controller.GetAllPlants();
 
@@ -82,7 +82,7 @@ namespace PlantTracker.WebApi.UnitTests
             public async Task GetAllPlants_WithNullResult_ReturnsNotFound()
             {
                 _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync((List<PlantResponseModel>) []);
+                    .ReturnsAsync((List<PlantResponseModel>)[]);
 
                 var result = await _controller.GetAllPlants();
 

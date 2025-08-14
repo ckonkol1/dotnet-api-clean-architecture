@@ -5,14 +5,69 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/v1/Plant": {
+    "/v1/Plants": {
       "get": {
         "tags": [
-          "Plant"
+          "Plants"
         ],
         "summary": "Get All Plants",
         "description": "This endpoint returns all plants stored in the database",
         "operationId": "GetAllPlants",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantResponseModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        }
+      }
+    },
+    "/v1/Plants/{id}": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Get Plant by Id",
+        "description": "This endpoint returns a plant with the provided Id",
+        "operationId": "GetPlantById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -121,7 +176,7 @@
   },
   "tags": [
     {
-      "name": "Plant"
+      "name": "Plants"
     }
   ]
 }

@@ -1,4 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
+using PlantTracker.Core.Constants;
 using PlantTracker.Core.Models;
 
 namespace PlantTracker.Infrastructure.Models;
@@ -7,28 +8,28 @@ namespace PlantTracker.Infrastructure.Models;
 public class PlantEntity
 {
     [DynamoDBHashKey]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     [DynamoDBProperty]
-    public required string CommonName { get; set; }
+    public string CommonName { get; set; }
 
     [DynamoDBProperty]
-    public required string ScientificName { get; set; }
+    public string ScientificName { get; set; }
 
     [DynamoDBProperty]
-    public required int Age { get; set; }
+    public int Age { get; set; }
 
     [DynamoDBProperty]
-    public required string Duration { get; set; }
+    public string Duration { get; set; }
 
     [DynamoDBProperty]
-    public required string Url { get; set; }
+    public string Url { get; set; }
 
     [DynamoDBProperty]
-    public required DateTime CreatedDateUtc { get; set; }
+    public DateTimeOffset CreatedDateUtc { get; set; }
 
     [DynamoDBProperty]
-    public required DateTime ModifiedDateUtc { get; set; }
+    public DateTimeOffset ModifiedDateUtc { get; set; }
 
     public PlantModel ToPlantModel()
     {
@@ -37,7 +38,11 @@ public class PlantEntity
             Id = new Guid(Id),
             CommonName = CommonName,
             ScientificName = ScientificName,
-            Duration = Duration,
+            Duration = Enum.TryParse<Duration>(Duration,
+                ignoreCase: true,
+                out var result)
+                ? result
+                : PlantTracker.Core.Constants.Duration.Unknown,
             Age = Age,
             Url = Url,
             CreatedDateUtc = CreatedDateUtc,

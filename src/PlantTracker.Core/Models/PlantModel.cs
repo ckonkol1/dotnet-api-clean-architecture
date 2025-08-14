@@ -1,15 +1,17 @@
+using PlantTracker.Core.Constants;
+
 namespace PlantTracker.Core.Models;
 
 public class PlantModel
 {
-    public required Guid Id { get; set; }
-    public required string CommonName { get; set; }
-    public required string ScientificName { get; set; }
-    public required int Age { get; set; }
-    public required string Duration { get; set; }
-    public required string Url { get; set; }
-    public required DateTime CreatedDateUtc { get; set; }
-    public required DateTime ModifiedDateUtc { get; set; }
+    public Guid Id { get; set; }
+    public string CommonName { get; set; }
+    public string ScientificName { get; set; }
+    public int Age { get; set; }
+    public Duration Duration { get; set; }
+    public string Url { get; set; }
+    public DateTimeOffset CreatedDateUtc { get; set; }
+    public DateTimeOffset ModifiedDateUtc { get; set; }
 
     public PlantResponseModel ToPlantResponseModel()
     {
@@ -18,7 +20,7 @@ public class PlantModel
             Id = Id,
             CommonName = CommonName,
             ScientificName = ScientificName,
-            Duration = Duration,
+            Duration = Duration.ToString(),
             Age = Age,
             Url = Url
         };
