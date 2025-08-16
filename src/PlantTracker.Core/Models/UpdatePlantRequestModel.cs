@@ -8,14 +8,14 @@ namespace PlantTracker.Core.Models;
 public class UpdatePlantRequestModel
 {
     [property: Description("Common plant name")]
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Common Name can only contain letters")]
-    public string CommonName { get; set; }
+    public string CommonName { get; set; } = string.Empty;
 
     [property: Description("Scientific Plant Name")]
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Scientific Name can only contain letters")]
-    public string ScientificName { get; set; }
+    public string ScientificName { get; set; } = string.Empty;
 
     [property: Description("Duration of plant. Perennial or Annual")]
     [ValidEnum]
@@ -25,8 +25,9 @@ public class UpdatePlantRequestModel
     public int Age { get; set; }
 
     [property: Description("Url to usda.gov plant documenation")]
-    [UsdaPlantProfileUrlAttribute]
-    public string Url { get; set; }
+    [MaxLength(200)]
+    [UsdaPlantProfileUrl]
+    public string Url { get; set; } = string.Empty;
 
     public PlantModel ToPlantModel(Guid id)
     {

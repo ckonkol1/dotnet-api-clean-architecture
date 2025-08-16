@@ -13,7 +13,7 @@ public class UsdaPlantProfileUrlAttribute : ValidationAttribute
         RegexOptions.IgnoreCase | RegexOptions.Compiled
     );
 
-    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         // Allow null/empty values (use [Required] separately if needed)
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
@@ -24,13 +24,13 @@ public class UsdaPlantProfileUrlAttribute : ValidationAttribute
         var url = value.ToString();
 
         // Check if URL starts with required prefix
-        if (!url.StartsWith(RequiredPrefix, StringComparison.OrdinalIgnoreCase))
+        if (url != null && !url.StartsWith(RequiredPrefix, StringComparison.OrdinalIgnoreCase))
         {
             return new ValidationResult($"Url does not start with the required prefix: {RequiredPrefix}");
         }
 
         // Check for potential SQL injection patterns
-        if (SqlInjectionPattern.IsMatch(url))
+        if (url != null && SqlInjectionPattern.IsMatch(url))
         {
             return new ValidationResult($"Url does not start with the required prefix: {RequiredPrefix}");
         }

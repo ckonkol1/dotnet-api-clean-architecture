@@ -1,233 +1,318 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
+using PlantTracker.Core.Constants;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
 using PlantTracker.WebApi.Controllers;
 
-namespace PlantTracker.WebApi.UnitTests
+namespace PlantTracker.WebApi.UnitTests;
+
+public class PlantsControllerTests
 {
-    public class PlantControllerUnitTests
+    private readonly Mock<IPlantService> _mockPlantService;
+    private readonly PlantsController _controller;
+
+    public PlantsControllerTests()
     {
-        public class PlantsControllerTests
+        _mockPlantService = new Mock<IPlantService>();
+        _controller = new PlantsController(_mockPlantService.Object);
+    }
+
+    [Fact]
+    public async Task GetAllPlants_WhenPlantsExist_ReturnsOkWithPlants()
+    {
+        var expectedPlants = new List<PlantResponseModel>
         {
-            private readonly Mock<IPlantService> _mockPlantService;
-            private readonly Mock<ILogger<PlantsController>> _mockLogger;
-            private readonly PlantsController _controller;
+            new() { Id = Guid.NewGuid(), CommonName = "Rose", ScientificName = "Rosa rubiginosa" },
+            new() { Id = Guid.NewGuid(), CommonName = "Tulip", ScientificName = "Tulipa gesneriana" }
+        };
 
-            public PlantsControllerTests()
-            {
-                _mockPlantService = new Mock<IPlantService>();
-                _mockLogger = new Mock<ILogger<PlantsController>>();
-                _controller = new PlantsController(_mockLogger.Object, _mockPlantService.Object);
-            }
+        _mockPlantService
+            .Setup(x => x.GetAllPlantsAsync())
+            .ReturnsAsync(expectedPlants);
 
-            [Fact]
-            public async Task GetAllPlants_WithPlants_ReturnsOkWithPlants()
-            {
-                var expectedPlants = new List<PlantResponseModel>
-                {
-                    new()
-                    {
-                        Id = new Guid("ec60872a-cad7-443b-ac94-4bb24a275633"),
-                        CommonName = "Zebra Plant",
-                        ScientificName = "Calathea zebrina",
-                        Age = 3,
-                        Duration = "Perennial",
-                        Url = "https://plants.usda.gov/plant-profile/CAZE",
-                    },
-                    new()
-                    {
-                        Id = new Guid("e19588bb-ecf0-480b-988d-f7c74de6f935"),
-                        CommonName = "Arizona hedgehog cactus",
-                        ScientificName = "Echinocereus coccineus Engelm",
-                        Age = 1,
-                        Duration = "Perennial",
-                        Url = "https://plants.usda.gov/plant-profile/ECCOA",
-                    }
-                };
+        var result = await _controller.GetAllPlants();
 
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync(expectedPlants);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var plants = Assert.IsAssignableFrom<IEnumerable<PlantResponseModel>>(okResult.Value);
+        Assert.Equal(expectedPlants.Count, plants.Count());
+        _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
+    }
 
-                var result = await _controller.GetAllPlants();
+    [Fact]
+    public async Task GetAllPlants_WhenNoPlantsExist_ReturnsNotFound()
+    {
+        _mockPlantService
+            .Setup(x => x.GetAllPlantsAsync())
+            .ReturnsAsync(new List<PlantResponseModel>());
 
-                var okResult = Assert.IsType<OkObjectResult>(result.Result);
-                var actualPlants = Assert.IsAssignableFrom<List<PlantResponseModel>>(okResult.Value);
+        var result = await _controller.GetAllPlants();
 
-                Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
-                Assert.Equal(2, actualPlants.Count);
-                Assert.Equal("Zebra Plant", actualPlants[0].CommonName);
-                Assert.Equal("Arizona hedgehog cactus", actualPlants[1].CommonName);
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal("No plants were found.", notFoundResult.Value);
+        _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
+    }
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
-            }
+    [Fact]
+    public async Task GetAllPlants_WhenServiceReturnsNull_ReturnsNotFound()
+    {
+        _mockPlantService
+            .Setup(x => x.GetAllPlantsAsync())
+            .ReturnsAsync(new List<PlantResponseModel>());
 
-            [Fact]
-            public async Task GetAllPlants_WithEmptyList_ReturnsNotFound()
-            {
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync((List<PlantResponseModel>)[]);
+        var result = await _controller.GetAllPlants();
 
-                var result = await _controller.GetAllPlants();
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal("No plants were found.", notFoundResult.Value);
+        _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
+    }
 
-                var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
-                Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+    [Fact]
+    public async Task GetPlantById_WhenPlantExists_ReturnsOk()
+    {
+        var plantId = Guid.NewGuid();
+        var expectedPlant = new PlantResponseModel
+        {
+            Id = plantId,
+            CommonName = "Rose",
+            ScientificName = "Rosa rubiginosa"
+        };
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
-            }
+        _mockPlantService
+            .Setup(x => x.GetPlantByIdAsync(plantId))
+            .ReturnsAsync(expectedPlant);
 
-            [Fact]
-            public async Task GetAllPlants_WithNullResult_ReturnsNotFound()
-            {
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync((List<PlantResponseModel>)[]);
+        var result = await _controller.GetPlantById(plantId);
 
-                var result = await _controller.GetAllPlants();
+        var okResult = Assert.IsType<OkResult>(result.Result);
+        Assert.Equal(200, okResult.StatusCode);
+        _mockPlantService.Verify(x => x.GetPlantByIdAsync(plantId), Times.Once);
+    }
 
-                var notFoundResult = Assert.IsType<NotFoundResult>(result.Result);
-                Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+    [Fact]
+    public async Task GetPlantById_WhenPlantDoesNotExist_ReturnsNotFound()
+    {
+        var plantId = Guid.NewGuid();
+        _mockPlantService
+            .Setup(x => x.GetPlantByIdAsync(plantId))
+            .ReturnsAsync(null as PlantResponseModel);
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
-            }
+        var result = await _controller.GetPlantById(plantId);
 
-            [Fact]
-            public async Task GetAllPlants_ServiceThrowsException_ReturnsInternalServerError()
-            {
-                var exceptionMessage = "Database connection failed";
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ThrowsAsync(new Exception(exceptionMessage));
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal($"Resource Not Found. Id: {plantId}", notFoundResult.Value);
+        _mockPlantService.Verify(x => x.GetPlantByIdAsync(plantId), Times.Once);
+    }
 
-                var result = await _controller.GetAllPlants();
+    [Fact]
+    public async Task GetPlantById_WithEmptyGuid_ReturnsNotFound()
+    {
+        var emptyId = Guid.Empty;
+        _mockPlantService
+            .Setup(x => x.GetPlantByIdAsync(emptyId))
+            .ReturnsAsync(null as PlantResponseModel);
 
-                var statusCodeResult = Assert.IsType<ObjectResult>(result.Result);
-                Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
+        var result = await _controller.GetPlantById(emptyId);
 
-                var actualResult = Assert.IsAssignableFrom<List<PlantResponseModel>>(statusCodeResult.Value);
-                Assert.Empty(actualResult);
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal($"Resource Not Found. Id: {emptyId}", notFoundResult.Value);
+        _mockPlantService.Verify(x => x.GetPlantByIdAsync(emptyId), Times.Once);
+    }
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
+    [Fact]
+    public async Task CreatePlant_WithValidModel_ReturnsCreated()
+    {
+        var createRequest = new CreatePlantRequestModel
+        {
+            CommonName = "Rose",
+            ScientificName = "Rosa rubiginosa",
+            Duration = Duration.Perennial,
+            Age = 2,
+            Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA"
+        };
+        var expectedId = Guid.NewGuid().ToString();
 
-                VerifyLoggerWasCalled(_mockLogger, LogLevel.Information, "Error Occurred");
-                VerifyLoggerWasCalled(_mockLogger, LogLevel.Information, "Error Occurred");
-            }
+        _mockPlantService
+            .Setup(x => x.CreatePlantAsync(It.IsAny<PlantModel>()))
+            .ReturnsAsync(expectedId);
 
-            [Fact]
-            public async Task GetAllPlants_ServiceThrowsSpecificException_LogsAndReturnsError()
-            {
-                var specificException = new InvalidOperationException("Specific database error");
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ThrowsAsync(specificException);
+        var result = await _controller.CreatePlant(createRequest);
 
-                var result = await _controller.GetAllPlants();
+        var createdResult = Assert.IsType<CreatedResult>(result.Result);
+        Assert.Equal(201, createdResult.StatusCode);
+        Assert.Equal(expectedId, createdResult.Value);
+        _mockPlantService.Verify(x => x.CreatePlantAsync(It.IsAny<PlantModel>()), Times.Once);
+    }
 
-                var statusCodeResult = Assert.IsType<ObjectResult>(result.Result);
-                Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
+    [Fact]
+    public async Task CreatePlant_WithNullModel_ShouldHandleGracefully()
+    {
+        await Assert.ThrowsAsync<NullReferenceException>(() => _controller.CreatePlant((null as CreatePlantRequestModel)!));
+    }
 
-                VerifyLoggerWasCalled(_mockLogger, LogLevel.Information, "Error Occurred", Times.Once());
+    [Fact]
+    public async Task UpdatePlantById_WithValidModel_ReturnsOkWithUpdatedPlant()
+    {
+        var plantId = Guid.NewGuid();
+        var updateRequest = new UpdatePlantRequestModel
+        {
+            CommonName = "Updated Rose",
+            ScientificName = "Rosa rubiginosa",
+            Duration = Duration.Perennial,
+            Age = 3,
+            Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA2"
+        };
+        var updatedPlant = new PlantResponseModel
+        {
+            Id = plantId,
+            CommonName = "Updated Rose",
+            ScientificName = "Rosa rubiginosa"
+        };
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Once);
-            }
+        _mockPlantService
+            .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
+            .ReturnsAsync(updatedPlant);
 
-            [Theory]
-            [InlineData(1)]
-            [InlineData(5)]
-            [InlineData(10)]
-            public async Task GetAllPlants_WithVariousPlantCounts_ReturnsCorrectCount(int plantCount)
-            {
-                var plants = Enumerable.Range(1, plantCount)
-                    .Select(i => new PlantResponseModel
-                    {
-                        Id = new Guid("ec60872a-cad7-443b-ac94-4bb24a275633"),
-                        CommonName = "Zebra Plant",
-                        ScientificName = "Calathea zebrina",
-                        Age = 3,
-                        Duration = "Perennial",
-                        Url = "https://plants.usda.gov/plant-profile/CAZE",
-                    })
-                    .ToList();
+        var result = await _controller.UpdatePlantById(plantId, updateRequest);
 
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync(plants);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnedPlant = Assert.IsType<PlantResponseModel>(okResult.Value);
+        Assert.Equal(updatedPlant.Id, returnedPlant.Id);
+        Assert.Equal(updatedPlant.CommonName, returnedPlant.CommonName);
+        _mockPlantService.Verify(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()), Times.Once);
+    }
 
+    [Fact]
+    public async Task UpdatePlantById_WithEmptyGuid_CallsService()
+    {
+        var emptyId = Guid.Empty;
+        var updateRequest = new UpdatePlantRequestModel
+        {
+            CommonName = "Updated Rose",
+            ScientificName = "Rosa rubiginosa",
+            Duration = Duration.Perennial,
+            Age = 3,
+            Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA2"
+        };
+        var updatedPlant = new PlantResponseModel
+        {
+            Id = emptyId,
+            CommonName = "Updated Rose",
+            ScientificName = "Rosa rubiginosa"
+        };
 
-                var result = await _controller.GetAllPlants();
+        _mockPlantService
+            .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
+            .ReturnsAsync(updatedPlant);
 
+        var result = await _controller.UpdatePlantById(emptyId, updateRequest);
 
-                var okResult = Assert.IsType<OkObjectResult>(result.Result);
-                var actualPlants = Assert.IsAssignableFrom<List<PlantResponseModel>>(okResult.Value);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        _mockPlantService.Verify(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()), Times.Once);
+    }
 
-                Assert.Equal(plantCount, actualPlants.Count);
-                Assert.Equal($"Zebra Plant", actualPlants[0].CommonName);
-            }
+    [Fact]
+    public async Task UpdatePlantById_WithNullModel_ShouldHandleGracefully()
+    {
+        var plantId = Guid.NewGuid();
 
-            [Fact]
-            public async Task GetAllPlants_SinglePlant_ReturnsOkWithSingleItem()
-            {
-                var singlePlant = new List<PlantResponseModel>
-                {
-                    new()
-                    {
-                        Id = new Guid("ec60872a-cad7-443b-ac94-4bb24a275633"),
-                        CommonName = "Zebra Plant",
-                        ScientificName = "Calathea zebrina",
-                        Age = 3,
-                        Duration = "Perennial",
-                        Url = "https://plants.usda.gov/plant-profile/CAZE",
-                    }
-                };
+        await Assert.ThrowsAsync<NullReferenceException>(() => _controller.UpdatePlantById(plantId, (null as UpdatePlantRequestModel)!));
+    }
 
-                _mockPlantService.Setup(x => x.GetAllPlantsAsync())
-                    .ReturnsAsync(singlePlant);
+    [Fact]
+    public async Task DeletePlantById_WithValidId_ReturnsNoContent()
+    {
+        var plantId = Guid.NewGuid();
+        _mockPlantService
+            .Setup(x => x.DeletePlantAsync(plantId))
+            .Returns(Task.CompletedTask);
 
+        var result = await _controller.DeletePlantById(plantId);
 
-                var result = await _controller.GetAllPlants();
+        var noContentResult = Assert.IsType<NoContentResult>(result.Result);
+        Assert.Equal(204, noContentResult.StatusCode);
+        _mockPlantService.Verify(x => x.DeletePlantAsync(plantId), Times.Once);
+    }
 
+    [Fact]
+    public async Task DeletePlantById_WithEmptyGuid_CallsService()
+    {
+        var emptyId = Guid.Empty;
+        _mockPlantService
+            .Setup(x => x.DeletePlantAsync(emptyId))
+            .Returns(Task.CompletedTask);
 
-                var okResult = Assert.IsType<OkObjectResult>(result.Result);
-                var actualPlants = Assert.IsAssignableFrom<List<PlantResponseModel>>(okResult.Value);
+        var result = await _controller.DeletePlantById(emptyId);
 
-                Assert.Single(actualPlants);
-                Assert.Equal("Zebra Plant", actualPlants[0].CommonName);
-            }
+        var noContentResult = Assert.IsType<NoContentResult>(result.Result);
+        Assert.Equal(204, noContentResult.StatusCode);
+        _mockPlantService.Verify(x => x.DeletePlantAsync(emptyId), Times.Once);
+    }
 
-            [Fact]
-            public async Task GetAllPlants_MultipleExceptions_HandlesCorrectly()
-            {
-                _mockPlantService.SetupSequence(x => x.GetAllPlantsAsync())
-                    .ThrowsAsync(new Exception("First error"))
-                    .ThrowsAsync(new Exception("Second error"));
+    [Fact]
+    public async Task DeletePlantById_WhenServiceThrowsException_PropagatesException()
+    {
+        var plantId = Guid.NewGuid();
+        var expectedException = new InvalidOperationException("Plant not found");
 
-                var result1 = await _controller.GetAllPlants();
-                var result2 = await _controller.GetAllPlants();
+        _mockPlantService
+            .Setup(x => x.DeletePlantAsync(plantId))
+            .ThrowsAsync(expectedException);
 
-                var statusResult1 = Assert.IsType<ObjectResult>(result1.Result);
-                var statusResult2 = Assert.IsType<ObjectResult>(result2.Result);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.DeletePlantById(plantId));
+        Assert.Equal(expectedException.Message, exception.Message);
+        _mockPlantService.Verify(x => x.DeletePlantAsync(plantId), Times.Once);
+    }
 
-                Assert.Equal(StatusCodes.Status500InternalServerError, statusResult1.StatusCode);
-                Assert.Equal(StatusCodes.Status500InternalServerError, statusResult2.StatusCode);
+    [Fact]
+    public async Task GetAllPlants_WhenServiceThrowsException_PropagatesException()
+    {
+        var expectedException = new InvalidOperationException("Database connection failed");
+        _mockPlantService
+            .Setup(x => x.GetAllPlantsAsync())
+            .ThrowsAsync(expectedException);
 
-                _mockPlantService.Verify(x => x.GetAllPlantsAsync(), Times.Exactly(2));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.GetAllPlants());
+        Assert.Equal(expectedException.Message, exception.Message);
+    }
 
-                VerifyLoggerWasCalled(_mockLogger, LogLevel.Information, "Error Occurred", Times.Exactly(2));
-            }
+    [Fact]
+    public async Task GetPlantById_WhenServiceThrowsException_PropagatesException()
+    {
+        var plantId = Guid.NewGuid();
+        var expectedException = new ArgumentException("Invalid plant ID");
+        _mockPlantService
+            .Setup(x => x.GetPlantByIdAsync(plantId))
+            .ThrowsAsync(expectedException);
 
-            private static void VerifyLoggerWasCalled<T>(
-                Mock<ILogger<T>> mockLogger,
-                LogLevel expectedLogLevel,
-                string expectedMessage,
-                Times? times = null)
-            {
-                times ??= Times.Once();
-                mockLogger.Verify(
-                    x => x.Log(
-                        expectedLogLevel,
-                        It.IsAny<EventId>(),
-                        It.Is<It.IsAnyType>((v, t) => (v.ToString() ?? string.Empty).Contains(expectedMessage)),
-                        It.IsAny<Exception>(),
-                        It.IsAny<Func<It.IsAnyType, Exception?, string>>()), (Times)times);
-            }
-        }
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _controller.GetPlantById(plantId));
+        Assert.Equal(expectedException.Message, exception.Message);
+    }
+
+    [Fact]
+    public async Task CreatePlant_WhenServiceThrowsException_PropagatesException()
+    {
+        var createRequest = new CreatePlantRequestModel { CommonName = "Rose", ScientificName = "Rosa rubiginosa", Duration = Duration.Perennial, Age = 2, Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA" };
+        var expectedException = new InvalidOperationException("Failed to create plant");
+        _mockPlantService
+            .Setup(x => x.CreatePlantAsync(It.IsAny<PlantModel>()))
+            .ThrowsAsync(expectedException);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.CreatePlant(createRequest));
+        Assert.Equal(expectedException.Message, exception.Message);
+    }
+
+    [Fact]
+    public async Task UpdatePlantById_WhenServiceThrowsException_PropagatesException()
+    {
+        var plantId = Guid.NewGuid();
+        var updateRequest = new UpdatePlantRequestModel { CommonName = "Updated Rose", ScientificName = "Rosa rubiginosa", Duration = Duration.Perennial, Age = 3, Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA2" };
+        var expectedException = new InvalidOperationException("Failed to update plant");
+        _mockPlantService
+            .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
+            .ThrowsAsync(expectedException);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.UpdatePlantById(plantId, updateRequest));
+        Assert.Equal(expectedException.Message, exception.Message);
     }
 }

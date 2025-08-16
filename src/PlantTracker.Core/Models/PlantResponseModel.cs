@@ -11,15 +11,15 @@ public class PlantResponseModel
 
     [property: Required]
     [property: Description("Common plant name")]
-    public string CommonName { get; set; }
+    public string CommonName { get; set; } = string.Empty;
 
     [property: Required]
     [property: Description("Scientific Plant Name")]
-    public string ScientificName { get; set; }
+    public string ScientificName { get; set; } = string.Empty;
 
     [property: Required]
-    [property: Description("Duration of plant. Perennial or Annual")]
-    public string Duration { get; set; }
+    [property: Description("Duration of plant")]
+    public string Duration { get; set; } = "Unknown";
 
     [property: Required]
     [property: Description("Age of plant in years")]
@@ -27,5 +27,5 @@ public class PlantResponseModel
 
     [property: Required]
     [property: Description("Url to usda.gov plant documenation")]
-    public string Url { get; set; }
+    public string Url { get; set; } = string.Empty;
 }

@@ -4,12 +4,18 @@ namespace PlantTracker.Core.Validations
 {
     public class ValidEnumAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value == null) return ValidationResult.Success;
+            if (value == null)
+            {
+                return ValidationResult.Success;
+            }
 
             var enumType = value.GetType();
-            if (!enumType.IsEnum) return ValidationResult.Success;
+            if (!enumType.IsEnum)
+            {
+                return ValidationResult.Success;
+            }
 
             if (!Enum.IsDefined(enumType, value))
             {

@@ -6,5 +6,7 @@ public interface IPlantService
 {
     Task<IEnumerable<PlantResponseModel>> GetAllPlantsAsync();
     Task<PlantResponseModel?> GetPlantByIdAsync(Guid id);
-    Task<PlantResponseModel?> UpdatePlant(PlantModel updatedPlant);
+    Task<PlantResponseModel> UpdatePlantAsync(PlantModel updatedPlant);
+    Task<string> CreatePlantAsync(PlantModel plant);
+    Task DeletePlantAsync(Guid id);
 }

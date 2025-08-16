@@ -8,22 +8,22 @@ namespace PlantTracker.Infrastructure.Models;
 public class PlantEntity
 {
     [DynamoDBHashKey]
-    public string Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [DynamoDBProperty]
-    public string CommonName { get; set; }
+    public string CommonName { get; set; } = string.Empty;
 
     [DynamoDBProperty]
-    public string ScientificName { get; set; }
+    public string ScientificName { get; set; } = string.Empty;
 
     [DynamoDBProperty]
     public int Age { get; set; }
 
     [DynamoDBProperty]
-    public string Duration { get; set; }
+    public string Duration { get; set; } = "Unknown";
 
     [DynamoDBProperty]
-    public string Url { get; set; }
+    public string Url { get; set; } = string.Empty;
 
     [DynamoDBProperty]
     public DateTimeOffset CreatedDateUtc { get; set; }

@@ -11,13 +11,13 @@ public class CreatePlantRequestModel
     [StringLength(100, MinimumLength = 2)]
     [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Common Name can only contain letters")]
     [Required]
-    public string CommonName { get; set; }
+    public string CommonName { get; set; } = string.Empty;
 
     [property: Description("Scientific Plant Name")]
     [StringLength(100, MinimumLength = 2)]
     [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Scientific Name can only contain letters")]
     [Required]
-    public string ScientificName { get; set; }
+    public string ScientificName { get; set; } = string.Empty;
 
     [property: Description("Duration of plant. Perennial or Annual")]
     [ValidEnum]
@@ -29,7 +29,20 @@ public class CreatePlantRequestModel
     public int Age { get; set; }
 
     [property: Description("Url to usda.gov plant documenation")]
-    [UsdaPlantProfileUrlAttribute]
+    [MaxLength(200)]
+    [UsdaPlantProfileUrl]
     [Required]
-    public string Url { get; set; }
+    public string Url { get; set; } = string.Empty;
+
+    public PlantModel ToPlantModel()
+    {
+        return new PlantModel()
+        {
+            CommonName = CommonName,
+            ScientificName = ScientificName,
+            Duration = Duration,
+            Age = Age,
+            Url = Url
+        };
+    }
 }

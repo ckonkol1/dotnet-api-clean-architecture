@@ -6,5 +6,7 @@ public interface IPlantRepository
 {
     Task<IEnumerable<PlantModel>> GetAllPlantsAsync();
     Task<PlantModel?> GetPlantByIdAsync(Guid id);
-    Task<PlantModel> UpdatePlant(PlantModel updatedPlant);
+    Task<PlantModel> UpdatePlantAsync(PlantModel updatedPlant);
+    Task<string> CreatePlantAsync(PlantModel plant);
+    Task DeletePlantAsync(Guid id);
 }

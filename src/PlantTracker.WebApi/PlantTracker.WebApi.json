@@ -45,6 +45,79 @@
               },
               "application/json": { }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Create Plant",
+        "description": "Creates a Plant",
+        "operationId": "CreatePlant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlantRequestModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlantRequestModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlantRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantResponseModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
           }
         }
       }
@@ -100,6 +173,133 @@
               },
               "application/json": { }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Updates Plant",
+        "description": "Updates plant by id",
+        "operationId": "UpdatePlantById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlantRequestModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlantRequestModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlantRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantResponseModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Delete Plant",
+        "description": "Deletes a Plant by id",
+        "operationId": "DeletePlantById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": { }
+            }
           }
         }
       }
@@ -107,6 +307,49 @@
   },
   "components": {
     "schemas": {
+      "CreatePlantRequestModel": {
+        "required": [
+          "commonName",
+          "scientificName",
+          "duration",
+          "age",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "commonName": {
+            "maxLength": 100,
+            "minLength": 2,
+            "pattern": "^[a-zA-Z]+$",
+            "type": "string",
+            "description": "Common plant name"
+          },
+          "scientificName": {
+            "maxLength": 100,
+            "minLength": 2,
+            "pattern": "^[a-zA-Z]+$",
+            "type": "string",
+            "description": "Scientific Plant Name"
+          },
+          "duration": {
+            "$ref": "#/components/schemas/Duration"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Age of plant in years",
+            "format": "int32"
+          },
+          "url": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "Url to usda.gov plant documenation"
+          }
+        }
+      },
+      "Duration": {
+        "type": "integer",
+        "description": "Duration of plant. Perennial or Annual"
+      },
       "PlantResponseModel": {
         "required": [
           "id",
@@ -133,7 +376,7 @@
           },
           "duration": {
             "type": "string",
-            "description": "Duration of plant. Perennial or Annual"
+            "description": "Duration of plant"
           },
           "age": {
             "type": "integer",
@@ -169,6 +412,36 @@
           "instance": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "UpdatePlantRequestModel": {
+        "type": "object",
+        "properties": {
+          "commonName": {
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z]+$",
+            "type": "string",
+            "description": "Common plant name"
+          },
+          "scientificName": {
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z]+$",
+            "type": "string",
+            "description": "Scientific Plant Name"
+          },
+          "duration": {
+            "$ref": "#/components/schemas/Duration"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Age of plant in years",
+            "format": "int32"
+          },
+          "url": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "Url to usda.gov plant documenation"
           }
         }
       }

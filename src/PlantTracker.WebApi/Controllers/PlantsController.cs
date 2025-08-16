@@ -8,13 +8,12 @@ namespace PlantTracker.WebApi.Controllers;
 /// <summary>
 /// Plant Controller
 /// </summary>
-/// <param name="logger"></param>
 /// <param name="plantService"></param>
 [ApiController]
 [ApiVersion(1)]
 [Route("/v{v:apiVersion}/[controller]")]
 [Produces("application/json")]
-public class PlantsController(ILogger<PlantsController> logger, IPlantService plantService) : ControllerBase
+public class PlantsController(IPlantService plantService) : ControllerBase
 {
     /// <summary>
     /// Get All Plants
@@ -66,23 +65,18 @@ public class PlantsController(ILogger<PlantsController> logger, IPlantService pl
     /// <summary>
     /// Create Plant
     /// </summary>
-    /// <returns>Create a plant</returns>
+    /// <returns>Id of Plant</returns>
     [EndpointSummary("Create Plant")]
     [EndpointDescription("Creates a Plant")]
-    [EndpointName("Create Plant")]
+    [EndpointName("CreatePlant")]
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
-    [HttpPatch("{id:guid}", Name = "UpdatePlantById")]
-    public async Task<ActionResult<PlantResponseModel>> CreatePlant([FromRoute] Guid id, [FromBody] CreatePlantRequestModel createPlantRequestModel)
+    [HttpPut(Name = "CreatePlant")]
+    public async Task<ActionResult<string>> CreatePlant([FromBody] CreatePlantRequestModel createPlantRequestModel)
     {
-        var plant = await plantService.UpdatePlant(createPlantRequestModel);
-        if (plant == null)
-        {
-            return NotFound($"Resource Not Found. Id: {id}");
-        }
-
-        return Ok();
+        var id = await plantService.CreatePlantAsync(createPlantRequestModel.ToPlantModel());
+        return Created(string.Empty, id);
     }
 
     /// <summary>
@@ -98,8 +92,23 @@ public class PlantsController(ILogger<PlantsController> logger, IPlantService pl
     [HttpPatch("{id:guid}", Name = "UpdatePlantById")]
     public async Task<ActionResult<PlantResponseModel>> UpdatePlantById([FromRoute] Guid id, [FromBody] UpdatePlantRequestModel updatePlantRequestModel)
     {
-        var plant = await plantService.UpdatePlant(updatePlantRequestModel.ToPlantModel(id));
-
+        var plant = await plantService.UpdatePlantAsync(updatePlantRequestModel.ToPlantModel(id));
         return Ok(plant);
+    }
+
+    /// <summary>
+    /// Delete Plant
+    /// </summary>
+    /// <returns>204 if successful</returns>
+    [EndpointSummary("Delete Plant")]
+    [EndpointDescription("Deletes a Plant by id")]
+    [EndpointName("DeletePlantById")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status204NoContent, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [HttpDelete("{id:guid}", Name = "DeletePlantById")]
+    public async Task<ActionResult<PlantResponseModel>> DeletePlantById([FromRoute] Guid id)
+    {
+        await plantService.DeletePlantAsync(id);
+        return NoContent();
     }
 }
