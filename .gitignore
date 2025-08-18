@@ -65,7 +65,7 @@ project.fragment.lock.json
 artifacts/
 
 #Project
-docker/
+/docker/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
