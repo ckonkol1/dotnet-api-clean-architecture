@@ -16,9 +16,9 @@ public class PlantService(IPlantRepository plantRepository) : IPlantService
         return (await plantRepository.GetPlantByIdAsync(id))?.ToPlantResponseModel();
     }
 
-    public async Task<PlantResponseModel> UpdatePlantAsync(PlantModel updatedPlant)
+    public async Task<PlantResponseModel?> UpdatePlantAsync(PlantModel updatedPlant)
     {
-        return (await plantRepository.UpdatePlantAsync(updatedPlant)).ToPlantResponseModel();
+        return (await plantRepository.UpdatePlantAsync(updatedPlant))?.ToPlantResponseModel();
     }
 
     public async Task<string> CreatePlantAsync(PlantModel plant)

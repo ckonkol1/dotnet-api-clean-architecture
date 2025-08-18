@@ -1,4 +1,5 @@
 ﻿using PlantTracker.Core.Constants;
+using PlantTracker.Core.Exceptions;
 using PlantTracker.Core.Validations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -31,14 +32,21 @@ public class UpdatePlantRequestModel
 
     public PlantModel ToPlantModel(Guid id)
     {
-        return new PlantModel()
+        try
         {
-            Id = id,
-            CommonName = CommonName,
-            ScientificName = ScientificName,
-            Duration = Duration,
-            Age = Age,
-            Url = Url
-        };
+            return new PlantModel()
+            {
+                Id = id,
+                CommonName = CommonName,
+                ScientificName = ScientificName,
+                Duration = Duration,
+                Age = Age,
+                Url = Url
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new MappingException("Failed to map to PlantResponseModel: " + ex.Message);
+        }
     }
 }

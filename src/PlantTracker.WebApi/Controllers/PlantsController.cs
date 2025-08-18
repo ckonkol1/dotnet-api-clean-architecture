@@ -40,7 +40,7 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
-    /// Get All Plants
+    /// Get Plant By Id
     /// </summary>
     /// <returns>A list of all the Plants</returns>
     [EndpointSummary("Get Plant by Id")]
@@ -50,16 +50,26 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
-    [HttpGet("{id:guid}", Name = "GetPlantById")]
-    public async Task<ActionResult<PlantResponseModel>> GetPlantById([FromRoute] Guid id)
+    [HttpGet("{id}", Name = "GetPlantById")]
+    public async Task<ActionResult<PlantResponseModel>> GetPlantById([FromRoute] string id)
     {
-        var plant = await plantService.GetPlantByIdAsync(id);
-        if (plant == null)
+        if (!Guid.TryParse(id, out var plantId))
         {
-            return NotFound($"Resource Not Found. Id: {id}");
+            throw new ArgumentException($"Invalid GUID format: {id}");
         }
 
-        return Ok();
+        if (plantId == Guid.Empty)
+        {
+            throw new ArgumentException("Plant Id cannot be an empty GUID");
+        }
+
+        var plant = await plantService.GetPlantByIdAsync(plantId);
+        if (plant == null)
+        {
+            return NotFound($"Resource Not Found. Id: {plantId}");
+        }
+
+        return Ok(plant);
     }
 
     /// <summary>
@@ -80,7 +90,7 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
-    /// Get Plant by Id
+    /// Update Plant by Id
     /// </summary>
     /// <returns>Returns a single plant with provided Id</returns>
     [EndpointSummary("Updates Plant")]
@@ -89,26 +99,46 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    [HttpPatch("{id:guid}", Name = "UpdatePlantById")]
-    public async Task<ActionResult<PlantResponseModel>> UpdatePlantById([FromRoute] Guid id, [FromBody] UpdatePlantRequestModel updatePlantRequestModel)
+    [HttpPatch("{id}", Name = "UpdatePlantById")]
+    public async Task<ActionResult<PlantResponseModel>> UpdatePlantById([FromRoute] string id, [FromBody] UpdatePlantRequestModel updatePlantRequestModel)
     {
-        var plant = await plantService.UpdatePlantAsync(updatePlantRequestModel.ToPlantModel(id));
+        if (!Guid.TryParse(id, out var plantId))
+        {
+            throw new ArgumentException($"Invalid GUID format: {id}");
+        }
+
+        if (plantId == Guid.Empty)
+        {
+            throw new ArgumentException("Plant Id cannot be an empty GUID");
+        }
+
+        var plant = await plantService.UpdatePlantAsync(updatePlantRequestModel.ToPlantModel(plantId));
         return Ok(plant);
     }
 
     /// <summary>
     /// Delete Plant
     /// </summary>
-    /// <returns>204 if successful</returns>
+    /// <returns>l</returns>
     [EndpointSummary("Delete Plant")]
     [EndpointDescription("Deletes a Plant by id")]
     [EndpointName("DeletePlantById")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status204NoContent, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    [HttpDelete("{id:guid}", Name = "DeletePlantById")]
-    public async Task<ActionResult<PlantResponseModel>> DeletePlantById([FromRoute] Guid id)
+    [HttpDelete("{id}", Name = "DeletePlantById")]
+    public async Task<ActionResult<PlantResponseModel>> DeletePlantById([FromRoute] string id)
     {
-        await plantService.DeletePlantAsync(id);
+        if (!Guid.TryParse(id, out var plantId))
+        {
+            throw new ArgumentException($"Invalid GUID format: {id}");
+        }
+
+        if (plantId == Guid.Empty)
+        {
+            throw new ArgumentException("Plant Id cannot be an empty GUID");
+        }
+
+        await plantService.DeletePlantAsync(plantId);
         return NoContent();
     }
 }

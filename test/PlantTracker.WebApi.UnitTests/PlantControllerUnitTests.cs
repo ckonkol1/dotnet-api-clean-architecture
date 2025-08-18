@@ -82,9 +82,9 @@ public class PlantsControllerTests
             .Setup(x => x.GetPlantByIdAsync(plantId))
             .ReturnsAsync(expectedPlant);
 
-        var result = await _controller.GetPlantById(plantId);
+        var result = await _controller.GetPlantById(plantId.ToString());
 
-        var okResult = Assert.IsType<OkResult>(result.Result);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(200, okResult.StatusCode);
         _mockPlantService.Verify(x => x.GetPlantByIdAsync(plantId), Times.Once);
     }
@@ -97,7 +97,7 @@ public class PlantsControllerTests
             .Setup(x => x.GetPlantByIdAsync(plantId))
             .ReturnsAsync(null as PlantResponseModel);
 
-        var result = await _controller.GetPlantById(plantId);
+        var result = await _controller.GetPlantById(plantId.ToString());
 
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
         Assert.Equal($"Resource Not Found. Id: {plantId}", notFoundResult.Value);
@@ -105,18 +105,15 @@ public class PlantsControllerTests
     }
 
     [Fact]
-    public async Task GetPlantById_WithEmptyGuid_ReturnsNotFound()
+    public async Task GetPlantById_WithEmptyGuid_ThrowsArgumentException()
     {
-        var emptyId = Guid.Empty;
-        _mockPlantService
-            .Setup(x => x.GetPlantByIdAsync(emptyId))
-            .ReturnsAsync(null as PlantResponseModel);
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.GetPlantById(Guid.Empty.ToString()));
+    }
 
-        var result = await _controller.GetPlantById(emptyId);
-
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-        Assert.Equal($"Resource Not Found. Id: {emptyId}", notFoundResult.Value);
-        _mockPlantService.Verify(x => x.GetPlantByIdAsync(emptyId), Times.Once);
+    [Fact]
+    public async Task GetPlantById_WithInvalidGuid_ThrowsArgumentException()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.GetPlantById("12345-45677"));
     }
 
     [Fact]
@@ -173,7 +170,7 @@ public class PlantsControllerTests
             .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
             .ReturnsAsync(updatedPlant);
 
-        var result = await _controller.UpdatePlantById(plantId, updateRequest);
+        var result = await _controller.UpdatePlantById(plantId.ToString(), updateRequest);
 
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         var returnedPlant = Assert.IsType<PlantResponseModel>(okResult.Value);
@@ -183,9 +180,8 @@ public class PlantsControllerTests
     }
 
     [Fact]
-    public async Task UpdatePlantById_WithEmptyGuid_CallsService()
+    public async Task UpdatePlantById_WithEmptyGuidId_ThrowsArgumentException()
     {
-        var emptyId = Guid.Empty;
         var updateRequest = new UpdatePlantRequestModel
         {
             CommonName = "Updated Rose",
@@ -194,21 +190,23 @@ public class PlantsControllerTests
             Age = 3,
             Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA2"
         };
-        var updatedPlant = new PlantResponseModel
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.UpdatePlantById(Guid.Empty.ToString(), updateRequest));
+    }
+
+    [Fact]
+    public async Task UpdatePlantById_WithInvalidGuidId_ThrowsArgumentException()
+    {
+        var updateRequest = new UpdatePlantRequestModel
         {
-            Id = emptyId,
             CommonName = "Updated Rose",
-            ScientificName = "Rosa rubiginosa"
+            ScientificName = "Rosa rubiginosa",
+            Duration = Duration.Perennial,
+            Age = 3,
+            Url = "https://plants.usda.gov/home/plantProfile?symbol=ROSA2"
         };
 
-        _mockPlantService
-            .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
-            .ReturnsAsync(updatedPlant);
-
-        var result = await _controller.UpdatePlantById(emptyId, updateRequest);
-
-        var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        _mockPlantService.Verify(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()), Times.Once);
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.UpdatePlantById("1234566", updateRequest));
     }
 
     [Fact]
@@ -216,7 +214,7 @@ public class PlantsControllerTests
     {
         var plantId = Guid.NewGuid();
 
-        await Assert.ThrowsAsync<NullReferenceException>(() => _controller.UpdatePlantById(plantId, (null as UpdatePlantRequestModel)!));
+        await Assert.ThrowsAsync<NullReferenceException>(() => _controller.UpdatePlantById(plantId.ToString(), (null as UpdatePlantRequestModel)!));
     }
 
     [Fact]
@@ -227,7 +225,7 @@ public class PlantsControllerTests
             .Setup(x => x.DeletePlantAsync(plantId))
             .Returns(Task.CompletedTask);
 
-        var result = await _controller.DeletePlantById(plantId);
+        var result = await _controller.DeletePlantById(plantId.ToString());
 
         var noContentResult = Assert.IsType<NoContentResult>(result.Result);
         Assert.Equal(204, noContentResult.StatusCode);
@@ -235,18 +233,15 @@ public class PlantsControllerTests
     }
 
     [Fact]
-    public async Task DeletePlantById_WithEmptyGuid_CallsService()
+    public async Task DeletePlantById_WithEmptyGuidId_ThrowsArgumentException()
     {
-        var emptyId = Guid.Empty;
-        _mockPlantService
-            .Setup(x => x.DeletePlantAsync(emptyId))
-            .Returns(Task.CompletedTask);
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.DeletePlantById(Guid.Empty.ToString()));
+    }
 
-        var result = await _controller.DeletePlantById(emptyId);
-
-        var noContentResult = Assert.IsType<NoContentResult>(result.Result);
-        Assert.Equal(204, noContentResult.StatusCode);
-        _mockPlantService.Verify(x => x.DeletePlantAsync(emptyId), Times.Once);
+    [Fact]
+    public async Task DeletePlantById_WithInvalidGuidId_ThrowsArgumentException()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => _controller.DeletePlantById("123456"));
     }
 
     [Fact]
@@ -259,7 +254,7 @@ public class PlantsControllerTests
             .Setup(x => x.DeletePlantAsync(plantId))
             .ThrowsAsync(expectedException);
 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.DeletePlantById(plantId));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.DeletePlantById(plantId.ToString()));
         Assert.Equal(expectedException.Message, exception.Message);
         _mockPlantService.Verify(x => x.DeletePlantAsync(plantId), Times.Once);
     }
@@ -285,7 +280,7 @@ public class PlantsControllerTests
             .Setup(x => x.GetPlantByIdAsync(plantId))
             .ThrowsAsync(expectedException);
 
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _controller.GetPlantById(plantId));
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _controller.GetPlantById(plantId.ToString()));
         Assert.Equal(expectedException.Message, exception.Message);
     }
 
@@ -312,7 +307,7 @@ public class PlantsControllerTests
             .Setup(x => x.UpdatePlantAsync(It.IsAny<PlantModel>()))
             .ThrowsAsync(expectedException);
 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.UpdatePlantById(plantId, updateRequest));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.UpdatePlantById(plantId.ToString(), updateRequest));
         Assert.Equal(expectedException.Message, exception.Message);
     }
 }

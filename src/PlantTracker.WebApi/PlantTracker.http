@@ -1,6 +1,48 @@
-@PlantTracker_HostAddress = http://localhost:5150
+### Variables
+@baseUrl = https://localhost:7001
+@apiVersion = 1
 
-GET {{PlantTracker_HostAddress}}/v1/plant/
+### Get All Plants
+GET {{baseUrl}}/v{{apiVersion}}/Plants
 Accept: application/json
+
+###
+
+### Get Plant By Id
+@plantId = 1f4820b1-21a6-4fe4-8dad-b886fab90f8b
+GET {{baseUrl}}/v{{apiVersion}}/Plants/{{plantId}}
+Accept: application/json
+
+###
+
+### Create Plant
+PUT {{baseUrl}}/v{{apiVersion}}/Plants
+Content-Type: application/json
+
+{
+  "commonName": "Fiddle Leaf Fig",
+  "scientificName": "Ficus carica",
+  "duration": "Perennial",
+  "age": 1,
+  "url": "https://plants.usda.gov/plant-profile/FICA"
+}
+
+###
+
+### Update Plant By Id
+@updatePlantId = 1f4820b1-21a6-4fe4-8dad-b886fab90f8b
+PATCH {{baseUrl}}/v{{apiVersion}}/Plants/{{updatePlantId}}
+Content-Type: application/json
+
+{
+  "duration": "Annual",
+  "age": 3,
+}
+
+###
+
+### Delete Plant By Id
+@deletePlantId = 1f4820b1-21a6-4fe4-8dad-b886fab90f8b
+DELETE {{baseUrl}}/v{{apiVersion}}/Plants/{{deletePlantId}}
 
 ###

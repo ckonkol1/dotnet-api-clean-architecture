@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2.Model;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PlantTracker.Core.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             {
                 Status = 400,
                 Title = "Validation Error",
+                Detail = exception.Message
+            },
+            MappingException => new ProblemDetails
+            {
+                Status = 400,
+                Title = "Mapping Error",
                 Detail = exception.Message
             },
             ResourceNotFoundException => new ProblemDetails

@@ -1,4 +1,5 @@
 using PlantTracker.Core.Constants;
+using PlantTracker.Core.Exceptions;
 
 namespace PlantTracker.Core.Models;
 
@@ -15,14 +16,21 @@ public class PlantModel
 
     public PlantResponseModel ToPlantResponseModel()
     {
-        return new PlantResponseModel()
+        try
         {
-            Id = Id,
-            CommonName = CommonName,
-            ScientificName = ScientificName,
-            Duration = Duration.ToString(),
-            Age = Age,
-            Url = Url
-        };
+            return new PlantResponseModel()
+            {
+                Id = Id,
+                CommonName = CommonName,
+                ScientificName = ScientificName,
+                Duration = Duration.ToString(),
+                Age = Age,
+                Url = Url
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new MappingException("Failed to map to PlantResponseModel: " + ex.Message);
+        }
     }
 }

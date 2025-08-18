@@ -1,6 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using PlantTracker.Core.Constants;
+using PlantTracker.Core.Exceptions;
 using PlantTracker.Core.Models;
+using PlantTracker.Infrastructure.Converters;
 
 namespace PlantTracker.Infrastructure.Models;
 
@@ -25,28 +27,35 @@ public class PlantEntity
     [DynamoDBProperty]
     public string Url { get; set; } = string.Empty;
 
-    [DynamoDBProperty]
+    [DynamoDBProperty(Converter = typeof(DateTimeOffsetPropertyConverter))]
     public DateTimeOffset CreatedDateUtc { get; set; }
 
-    [DynamoDBProperty]
+    [DynamoDBProperty(Converter = typeof(DateTimeOffsetPropertyConverter))]
     public DateTimeOffset ModifiedDateUtc { get; set; }
 
     public PlantModel ToPlantModel()
     {
-        return new PlantModel()
+        try
         {
-            Id = new Guid(Id),
-            CommonName = CommonName,
-            ScientificName = ScientificName,
-            Duration = Enum.TryParse<Duration>(Duration,
-                ignoreCase: true,
-                out var result)
-                ? result
-                : PlantTracker.Core.Constants.Duration.Unknown,
-            Age = Age,
-            Url = Url,
-            CreatedDateUtc = CreatedDateUtc,
-            ModifiedDateUtc = ModifiedDateUtc
-        };
+            return new PlantModel()
+            {
+                Id = new Guid(Id),
+                CommonName = CommonName,
+                ScientificName = ScientificName,
+                Duration = Enum.TryParse<Duration>(Duration,
+                    ignoreCase: true,
+                    out var result)
+                    ? result
+                    : PlantTracker.Core.Constants.Duration.Unknown,
+                Age = Age,
+                Url = Url,
+                CreatedDateUtc = CreatedDateUtc,
+                ModifiedDateUtc = ModifiedDateUtc
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new MappingException("Failed to map to PlantModel: " + ex.Message);
+        }
     }
 }

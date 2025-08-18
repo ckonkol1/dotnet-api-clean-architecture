@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
                 return new AmazonDynamoDBClient(awsDynamoDbConfig);
             })
             .AddScoped<IDynamoDBContext, DynamoDBContext>()
-            .AddScoped<IPlantRepository, PlantRepository>();
+            .AddScoped<IPlantRepository, PlantRepository>()
+            .AddSingleton<TimeProvider>(TimeProvider.System);
     }
 }
