@@ -19,7 +19,7 @@ if aws dynamodb describe-table \
     --table-name "$TABLE_NAME" \
     --region "$REGION" \
     --endpoint-url "$ENDPOINT" \
-    >/dev/null 2>&1; then
+    --output json >/dev/null 2>&1; then
     echo "Table already exists. Skipping Creation"
 else
     echo "Table does not exist. Creating table..."
@@ -32,7 +32,7 @@ else
         --billing-mode PAY_PER_REQUEST \
         --endpoint-url $ENDPOINT \
         --region $REGION \
-        >/dev/null 2>&1; then
+        --output json >/dev/null 2>&1; then
         echo "Table created successfully"
     else
         echo "Failed to create table"
