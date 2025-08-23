@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using PlantTrackerCleanArchitectureApi.Application.DependencyInjection;
 using PlantTrackerCleanArchitectureApi.Infrastructure.DependencyInjection;
 using PlantTrackerCleanArchitectureApi.WebApi.Middleware;
 using Scalar.AspNetCore;

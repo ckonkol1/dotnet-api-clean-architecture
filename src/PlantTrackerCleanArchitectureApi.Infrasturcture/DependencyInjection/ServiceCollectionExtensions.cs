@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PlantTrackerCleanArchitectureApi.Core.Interfaces;
 using PlantTrackerCleanArchitectureApi.Infrastructure.Configurations;
 using PlantTrackerCleanArchitectureApi.Infrastructure.Repositories;
 

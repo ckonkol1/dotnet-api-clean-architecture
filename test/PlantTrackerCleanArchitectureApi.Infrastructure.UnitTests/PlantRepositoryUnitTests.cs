@@ -1,6 +1,8 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using Moq;
+using PlantTrackerCleanArchitectureApi.Core.Constants;
+using PlantTrackerCleanArchitectureApi.Core.Models;
 using PlantTrackerCleanArchitectureApi.Infrastructure.Models;
 using PlantTrackerCleanArchitectureApi.Infrastructure.Repositories;
 

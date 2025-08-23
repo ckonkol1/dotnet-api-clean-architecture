@@ -1,4 +1,7 @@
-﻿namespace PlantTrackerCleanArchitectureApi.Application.Services;
+﻿using PlantTrackerCleanArchitectureApi.Core.Interfaces;
+using PlantTrackerCleanArchitectureApi.Core.Models;
+
+namespace PlantTrackerCleanArchitectureApi.Application.Services;
 
 public class PlantService(IPlantRepository plantRepository) : IPlantService
 {

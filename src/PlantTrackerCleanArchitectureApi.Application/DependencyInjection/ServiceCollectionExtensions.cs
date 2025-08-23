@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlantTrackerCleanArchitectureApi.Application.Services;
+using PlantTrackerCleanArchitectureApi.Core.Interfaces;
 
 namespace PlantTrackerCleanArchitectureApi.Application.DependencyInjection;
 
