@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Amazon.DynamoDBv2.Model;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using PlantTracker.Core.Constants;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
 using PlantTracker.WebApi.Controllers;
 
-namespace PlantTracker.WebApi.UnitTests;
+namespace PlantTracker.WebApi.UnitTests.Controllers;
 
 public class PlantsControllerTests
 {
@@ -97,10 +98,7 @@ public class PlantsControllerTests
             .Setup(x => x.GetPlantByIdAsync(plantId))
             .ReturnsAsync(null as PlantResponseModel);
 
-        var result = await _controller.GetPlantById(plantId.ToString());
-
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-        Assert.Equal($"Resource Not Found. Id: {plantId}", notFoundResult.Value);
+        await Assert.ThrowsAsync<ResourceNotFoundException>(() => _controller.GetPlantById(plantId.ToString()));
         _mockPlantService.Verify(x => x.GetPlantByIdAsync(plantId), Times.Once);
     }
 

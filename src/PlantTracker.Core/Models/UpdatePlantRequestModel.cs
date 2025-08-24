@@ -1,21 +1,21 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using PlantTracker.Core.Constants;
+﻿using PlantTracker.Core.Constants;
 using PlantTracker.Core.Exceptions;
 using PlantTracker.Core.Validations;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace PlantTracker.Core.Models;
 
 public class UpdatePlantRequestModel
 {
     [property: Description("Common plant name")]
-    [MaxLength(100)]
-    [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Common Name can only contain letters")]
+    [OptionalStringLength(2, 100)]
+    [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Common Name can only contain letters and spaces")]
     public string CommonName { get; set; } = string.Empty;
 
     [property: Description("Scientific Plant Name")]
-    [MaxLength(100)]
-    [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Scientific Name can only contain letters")]
+    [OptionalStringLength(2, 100)]
+    [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Scientific Name can only contain letters and spaces")]
     public string ScientificName { get; set; } = string.Empty;
 
     [property: Description("Duration of plant. Perennial or Annual")]
@@ -23,7 +23,8 @@ public class UpdatePlantRequestModel
     public Duration Duration { get; set; }
 
     [property: Description("Age of plant in years")]
-    public int Age { get; set; }
+    [Range(1, 500, ErrorMessage = "Age must be between 1 and 500")]
+    public int? Age { get; set; }
 
     [property: Description("Url to usda.gov plant documenation")]
     [MaxLength(200)]
@@ -40,7 +41,7 @@ public class UpdatePlantRequestModel
                 CommonName = CommonName,
                 ScientificName = ScientificName,
                 Duration = Duration,
-                Age = Age,
+                Age = Age ?? int.MinValue,
                 Url = Url
             };
         }

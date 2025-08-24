@@ -4,13 +4,13 @@ using PlantTracker.Core.Constants;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
 
-namespace PlantTracker.Application.UnitTests
+namespace PlantTracker.Application.UnitTests.Services
 {
     public class PlantServiceUnitTests
     {
         private readonly Mock<IPlantRepository> _mockPlantRepository;
         private readonly PlantService _plantService;
-        private readonly DateTime _fixedDateTime = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+        private readonly DateTime _fixedDateTime = new(2024, 1, 1, 12, 0, 0, DateTimeKind.Utc);
 
         public PlantServiceUnitTests()
         {
@@ -23,7 +23,7 @@ namespace PlantTracker.Application.UnitTests
         {
             var plantModels = new List<PlantModel>
             {
-                new PlantModel
+                new()
                 {
                     Id = Guid.NewGuid(),
                     CommonName = "Rose",
@@ -34,7 +34,7 @@ namespace PlantTracker.Application.UnitTests
                     CreatedDateUtc = _fixedDateTime,
                     ModifiedDateUtc = _fixedDateTime
                 },
-                new PlantModel
+                new()
                 {
                     Id = Guid.NewGuid(),
                     CommonName = "Tulip",
@@ -308,7 +308,7 @@ namespace PlantTracker.Application.UnitTests
         {
             var plantModels = new List<PlantModel>
             {
-                new PlantModel
+                new()
                 {
                     Id = Guid.NewGuid(),
                     CommonName = "Rose",

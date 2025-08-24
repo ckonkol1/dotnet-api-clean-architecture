@@ -1,5 +1,8 @@
-﻿namespace PlantTracker.Core.Constants;
+﻿using System.Text.Json.Serialization;
 
+namespace PlantTracker.Core.Constants;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Duration
 {
     Unknown = 0,

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlantTracker.Core.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace PlantTracker.WebApi.Middleware;
 
@@ -17,10 +18,16 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 
         var problemDetails = exception switch
         {
+            JsonException => new ProblemDetails
+            {
+                Title = "Invalid Request Body Format",
+                Detail = "The submitted data is malformed or does not match the expected structure.",
+                Status = StatusCodes.Status400BadRequest
+            },
             ArgumentException => new ProblemDetails
             {
                 Status = 400,
-                Title = "Invalid Argument Provided.",
+                Title = "Invalid Argument Provided",
                 Detail = exception.Message
             },
             ValidationException => new ProblemDetails
@@ -38,7 +45,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             ResourceNotFoundException => new ProblemDetails
             {
                 Status = 404,
-                Title = "Resource Not Found.",
+                Title = "Resource Not Found",
                 Detail = exception.Message
             },
             UnauthorizedAccessException => new ProblemDetails()
@@ -50,7 +57,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             _ => new ProblemDetails()
             {
                 Status = StatusCodes.Status500InternalServerError,
-                Title = "Internal Server Error Occurred.",
+                Title = "Internal Server Error Occurred",
                 Detail = exception?.Message
             }
         };

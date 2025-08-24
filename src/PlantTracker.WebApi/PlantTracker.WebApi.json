@@ -317,14 +317,14 @@
           "commonName": {
             "maxLength": 100,
             "minLength": 2,
-            "pattern": "^[a-zA-Z]+$",
+            "pattern": "^[a-zA-Z ]+$",
             "type": "string",
             "description": "Common plant name"
           },
           "scientificName": {
             "maxLength": 100,
             "minLength": 2,
-            "pattern": "^[a-zA-Z]+$",
+            "pattern": "^[a-zA-Z ]+$",
             "type": "string",
             "description": "Scientific Plant Name"
           },
@@ -332,6 +332,8 @@
             "$ref": "#/components/schemas/Duration"
           },
           "age": {
+            "maximum": 500,
+            "minimum": 1,
             "type": "integer",
             "description": "Age of plant in years",
             "format": "int32"
@@ -344,7 +346,11 @@
         }
       },
       "Duration": {
-        "type": "integer",
+        "enum": [
+          "Unknown",
+          "Annual",
+          "Perennial"
+        ],
         "description": "Duration of plant. Perennial or Annual"
       },
       "PlantResponseModel": {
@@ -416,14 +422,12 @@
         "type": "object",
         "properties": {
           "commonName": {
-            "maxLength": 100,
-            "pattern": "^[a-zA-Z]+$",
+            "pattern": "^[a-zA-Z ]+$",
             "type": "string",
             "description": "Common plant name"
           },
           "scientificName": {
-            "maxLength": 100,
-            "pattern": "^[a-zA-Z]+$",
+            "pattern": "^[a-zA-Z ]+$",
             "type": "string",
             "description": "Scientific Plant Name"
           },
@@ -431,9 +435,12 @@
             "$ref": "#/components/schemas/Duration"
           },
           "age": {
+            "maximum": 500,
+            "minimum": 1,
             "type": "integer",
             "description": "Age of plant in years",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "url": {
             "maxLength": 200,

@@ -1,6 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using PlantTracker.Core.Constants;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
 using PlantTracker.Infrastructure.Models;
@@ -39,7 +38,7 @@ public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider time
             originalPlantWithUpdates.ScientificName = updatedPlant.ScientificName;
         }
 
-        if (Enum.IsDefined(typeof(Duration), updatedPlant.Duration) && (updatedPlant.Duration != originalPlantWithUpdates.Duration))
+        if (Enum.IsDefined(updatedPlant.Duration) && (updatedPlant.Duration != originalPlantWithUpdates.Duration))
         {
             originalPlantWithUpdates.Duration = updatedPlant.Duration;
         }
@@ -54,7 +53,6 @@ public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider time
             originalPlantWithUpdates.Age = updatedPlant.Age;
         }
 
-        originalPlantWithUpdates.Age = updatedPlant.Age;
         var plantEntity = new PlantEntity()
         {
             Id = originalPlantWithUpdates.Id.ToString(),
@@ -91,6 +89,6 @@ public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider time
 
     public async Task DeletePlantAsync(Guid id)
     {
-        await dynamoDbContext.DeleteAsync(id);
+        await dynamoDbContext.DeleteAsync<PlantEntity>(id.ToString(), CancellationToken.None);
     }
 }

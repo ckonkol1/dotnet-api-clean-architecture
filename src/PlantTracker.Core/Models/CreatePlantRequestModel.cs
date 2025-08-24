@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using PlantTracker.Core.Constants;
+﻿using PlantTracker.Core.Constants;
 using PlantTracker.Core.Exceptions;
 using PlantTracker.Core.Validations;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace PlantTracker.Core.Models;
 
@@ -10,13 +10,13 @@ public class CreatePlantRequestModel
 {
     [property: Description("Common plant name")]
     [StringLength(100, MinimumLength = 2)]
-    [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Common Name can only contain letters")]
+    [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Common Name can only contain letters and spaces")]
     [Required]
     public string CommonName { get; set; } = string.Empty;
 
     [property: Description("Scientific Plant Name")]
     [StringLength(100, MinimumLength = 2)]
-    [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Scientific Name can only contain letters")]
+    [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Scientific Name can only contain letters and spaces")]
     [Required]
     public string ScientificName { get; set; } = string.Empty;
 
@@ -26,6 +26,7 @@ public class CreatePlantRequestModel
     public Duration Duration { get; set; }
 
     [property: Description("Age of plant in years")]
+    [Range(1, 500, ErrorMessage = "Age must be between 1 and 500")]
     [Required]
     public int Age { get; set; }
 

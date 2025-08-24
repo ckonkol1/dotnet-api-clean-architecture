@@ -6,14 +6,14 @@ using PlantTracker.Core.Models;
 using PlantTracker.Infrastructure.Models;
 using PlantTracker.Infrastructure.Repositories;
 
-namespace PlantTracker.Infrastructure.UnitTests;
+namespace PlantTracker.Infrastructure.UnitTests.Repositories;
 
 public class PlantRepositoryTests
 {
     private readonly Mock<IDynamoDBContext> _mockDynamoDbContext;
     private readonly Mock<TimeProvider> _mockTimeProvider;
     private readonly PlantRepository _repository;
-    private readonly DateTime _fixedDateTime = new DateTime(2024, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+    private readonly DateTime _fixedDateTime = new(2024, 1, 1, 12, 0, 0, DateTimeKind.Utc);
 
     public PlantRepositoryTests()
     {
@@ -227,7 +227,7 @@ public class PlantRepositoryTests
 
         await _repository.DeletePlantAsync(plantId);
 
-        _mockDynamoDbContext.Verify(x => x.DeleteAsync(plantId, It.IsAny<CancellationToken>()), Times.Once);
+        _mockDynamoDbContext.Verify(x => x.DeleteAsync<PlantEntity>(plantId.ToString(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class PlantRepositoryTests
 
         await _repository.DeletePlantAsync(emptyId);
 
-        _mockDynamoDbContext.Verify(x => x.DeleteAsync(emptyId, It.IsAny<CancellationToken>()), Times.Once);
+        _mockDynamoDbContext.Verify(x => x.DeleteAsync<PlantEntity>(emptyId.ToString(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

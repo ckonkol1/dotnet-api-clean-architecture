@@ -15,24 +15,20 @@ public class UsdaPlantProfileUrlAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        // Allow null/empty values (use [Required] separately if needed)
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
             return ValidationResult.Success;
         }
 
         var url = value.ToString();
-
-        // Check if URL starts with required prefix
         if (url != null && !url.StartsWith(RequiredPrefix, StringComparison.OrdinalIgnoreCase))
         {
             return new ValidationResult($"Url does not start with the required prefix: {RequiredPrefix}");
         }
 
-        // Check for potential SQL injection patterns
         if (url != null && SqlInjectionPattern.IsMatch(url))
         {
-            return new ValidationResult($"Url does not start with the required prefix: {RequiredPrefix}");
+            return new ValidationResult($"Invalid Url");
         }
 
         return ValidationResult.Success;

@@ -17,12 +17,9 @@ namespace PlantTracker.Core.Validations
                 return ValidationResult.Success;
             }
 
-            if (!Enum.IsDefined(enumType, value))
-            {
-                return new ValidationResult(ErrorMessage ?? $"Invalid value for {enumType.Name}");
-            }
-
-            return ValidationResult.Success;
+            return !Enum.IsDefined(enumType, value)
+                ? new ValidationResult(ErrorMessage ?? $"Invalid value for {enumType.Name}")
+                : ValidationResult.Success;
         }
     }
 }

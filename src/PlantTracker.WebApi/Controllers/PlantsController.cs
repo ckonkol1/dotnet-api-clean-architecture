@@ -1,4 +1,5 @@
-﻿using Asp.Versioning;
+﻿using Amazon.DynamoDBv2.Model;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
@@ -66,7 +67,7 @@ public class PlantsController(IPlantService plantService) : ControllerBase
         var plant = await plantService.GetPlantByIdAsync(plantId);
         if (plant == null)
         {
-            return NotFound($"Resource Not Found. Id: {plantId}");
+            throw new ResourceNotFoundException($"Plant Id: {plantId} was not found");
         }
 
         return Ok(plant);
