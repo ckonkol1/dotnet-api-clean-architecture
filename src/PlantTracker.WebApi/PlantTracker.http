@@ -1,7 +1,7 @@
 ### Variables
 @baseUrl = https://localhost:7205
 @apiVersion = 1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZTZkMWY1MC02MWNkLTQyZjctYWFjOS1lMzkwMmRhYTI3ZmEiLCJzdWIiOiJhZG1pbkBieXRlc2l6ZWJyZXdzLmNvbSIsImVtYWlsIjoiYWRtaW5AYnl0ZXNpemVicmV3cy5jb20iLCJ1c2VyaWQiOiIxZjQ4MjBiMS0yMWE2LTRmZTQtOGRhZC1iODg2ZmFiOTBmOGIiLCJhZG1pbiI6ZmFsc2UsIm5iZiI6MTc1NjA5MjEyOSwiZXhwIjoxNzU2MDkzMDI5LCJpYXQiOjE3NTYwOTIxMjksImlzcyI6Imh0dHBzOi8vaWQuYnl0ZXNpemVicmV3cy5jb20iLCJhdWQiOiJodHRwczovL2F1ZGllbmNlLmJ5dGVzaXplYnJld3MuY29tIn0.nXQRGrP7UriPCx_fp4en3TdqZ551sw3OTBoXl_y1AvQ
+@token = REPLACE WITH TOKEN
 
 ### Get All Plants
 GET {{baseUrl}}/v{{apiVersion}}/Plants
