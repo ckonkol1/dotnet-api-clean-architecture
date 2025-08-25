@@ -1,15 +1,16 @@
 ﻿using Amazon.DynamoDBv2.Model;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantTracker.Core.Interfaces;
 using PlantTracker.Core.Models;
+using PlantTracker.WebApi.Middleware.Identity;
 
 namespace PlantTracker.WebApi.Controllers;
 
 /// <summary>
 /// Plant Controller
 /// </summary>
-/// <param name="plantService"></param>
 [ApiController]
 [ApiVersion(1)]
 [Route("/v{v:apiVersion}/[controller]")]
@@ -24,9 +25,11 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [EndpointDescription("This endpoint returns all plants stored in the database")]
     [EndpointName("GetAllPlants")]
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
+    [Authorize]
     [HttpGet(Name = "GetAllPlants")]
     public async Task<ActionResult<IEnumerable<PlantResponseModel>>> GetAllPlants()
     {
@@ -48,9 +51,11 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [EndpointDescription("This endpoint returns a plant with the provided Id")]
     [EndpointName("GetPlantById")]
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
+    [Authorize]
     [HttpGet("{id}", Name = "GetPlantById")]
     public async Task<ActionResult<PlantResponseModel>> GetPlantById([FromRoute] string id)
     {
@@ -82,7 +87,9 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [EndpointName("CreatePlant")]
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut(Name = "CreatePlant")]
     public async Task<ActionResult<string>> CreatePlant([FromBody] CreatePlantRequestModel createPlantRequestModel)
     {
@@ -98,8 +105,13 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [EndpointDescription("Updates plant by id")]
     [EndpointName("UpdatePlantById")]
     [ProducesResponseType<PlantResponseModel>(StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
+    [Authorize]
+    [RequiresClaim(IdentityData.AdminUserClaimName, "true")]
     [HttpPatch("{id}", Name = "UpdatePlantById")]
     public async Task<ActionResult<PlantResponseModel>> UpdatePlantById([FromRoute] string id, [FromBody] UpdatePlantRequestModel updatePlantRequestModel)
     {
@@ -126,6 +138,9 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     [EndpointName("DeletePlantById")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status204NoContent, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, "application/problem+json")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpDelete("{id}", Name = "DeletePlantById")]
     public async Task<ActionResult<PlantResponseModel>> DeletePlantById([FromRoute] string id)
     {

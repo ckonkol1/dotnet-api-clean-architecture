@@ -7,11 +7,10 @@ public class UsdaPlantProfileUrlAttribute : ValidationAttribute
 {
     private const string RequiredPrefix = "https://plants.usda.gov/plant-profile";
 
-    private static readonly Regex SqlInjectionPattern = new(
-        @"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT|JAVASCRIPT|VBSCRIPT)\b)|" +
-        @"(--|/\*|\*/|;|'|""|<|>|&|%|@|\+|\||\\|\^|\$|\#|\!|\?|\*|\(|\)|\[|\]|\{|\})",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled
-    );
+    private static readonly Regex SqlInjectionPattern = new Regex(
+        @"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT|JAVASCRIPT|VBSCRIPT)\b)|"
+        + @"(--|/\*|\*/|;|'|""|<|>|&|%|@|\+|\||\\|\^|\$|\#|\!|\?|\*|\(|\)|\[|\]|\{|\})",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {

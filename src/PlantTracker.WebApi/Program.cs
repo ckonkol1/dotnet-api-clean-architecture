@@ -1,10 +1,15 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using PlantTracker.Application.DependencyInjection;
 using PlantTracker.Infrastructure.DependencyInjection;
 using PlantTracker.WebApi.Middleware;
+using PlantTracker.WebApi.Middleware.Identity;
 using Scalar.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 builder.Services.AddApiVersioning(options =>
     {
@@ -27,16 +32,43 @@ builder.Services.AddControllers();
 builder.Services
     .RegisterInfrastructure(builder.Configuration)
     .RegisterApplication()
-    .AddOpenApi()
+    .AddOpenApi(options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); })
     .AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = config["JwtSettings:Issuer"],
+        ValidAudience = config["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
+
+builder.Services.AddAuthorization(option =>
+{
+    option.AddPolicy(IdentityData.AdminUserPolicyName, p =>
+        p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
+});
 
 var app = builder.Build();
 app.UseStatusCodePages();
 app.UseExceptionHandler();
-
-app.MapControllers();
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -48,8 +80,5 @@ if (app.Environment.IsDevelopment())
         options.WithSidebar(false);
     });
 }
-
-//app.UseAuthorization();
-
 
 app.Run();
