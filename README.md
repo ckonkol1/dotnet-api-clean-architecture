@@ -1,26 +1,29 @@
 # dotnet-api-clean-architecture
 
-The purpose of this repo is to provide an example of an API written using a simplified version of the Clean Architecture design principle in .NET. 
-The PlantTracker Web API allows a user to keep a record of plants by tracking their name, scientific name, usda website url, age, and duration in a DynamoDB database.
+This repository demonstrates a simplified implementation of Clean Architecture principles in .NET through a practical plant tracking application. The PlantTracker Web Api enables users to maintain a comprehensive plant database, storing essential information including common names, scientific names, USDA website URLs, plant age, and growth duration. All data is persisted using Amazon DynamoDB, showcasing how Clean Architecture facilitates easy integration with cloud-based storage solutions.
 
 ## Overview
 
-The code is constructed using Clean Architecture design principle which allows for seperation of concerns and framework independence. The solution contains four main layers which are represented by the .Net Projects: PlantTracker.WebApi, PlantTracker.Core, PlantTracker.Applicaiton, PlantTracker.Infrastructure. The layers allow for the buiness locgic to be independent from the infrastructure so that any individual layer may be replaced without to refactor the entire repository. Dpendencies between layers are minimized by utilizing the Core layer. If the Application layer needs to call a service in the Infrastructure layer, it would accomplish this by dependency injection using an interface from the Core Layer.
+This code implements Clean Architecture, a design principle that enables separation of concerns and framework independence. The solution is organized into four distinct layers, each represented by a .NET project: PlantTracker.Application, PlantTracker.Core, PlantTracker.Infrastructure, and PlantTracker.WebApi.
 
-Although this design principle may contain more code then other APIs designs, its written for long term maintainability so that code can be removed and replaced without causing major refactors or complete rewrites.
+This layered approach isolates business logic from infrastructure concerns, allowing individual layers to be replaced without requiring extensive refactoring. The Core layer serves as the foundation, minimizing dependencies between other layers. For example, when the Application layer needs to access Infrastructure services, it uses dependency injection through interfaces defined in the Core layer.
+
+While Clean Architecture may require more initial code compared to simpler design patterns, it prioritizes long-term maintainability. This investment allows developers to modify, remove, or replace components without triggering major refactors or complete rewrites.
 
 #### Project Layers
 | Layer Name | Project Name | Description |
 |---------|-----------|----------|
-| Applicaiton | PlantTracker.Application.csproj | The Application layer contains the business logic of the applicaiton and should only depend on the Core layer. |
-| Core | PlantTracker.Core.csproj | [Repository](https://github.com/user/repo) | The Core layer contains all interfaces and models shared across all layers. |
-| Infrastructure | PlantTracker.Infrastructure.csproj | The Infrastructure layer contains implementations to external systems the application relies on like databases, API's, caches, etc. |
-| WebApi | PlantTracker.WebApi.csproj | The API layer is exposed to the consumer. This layer should contain controllers, middleware (auth, error handling), dependency injection, and project initialazation. |
+| Applicaiton | PlantTracker.Application.csproj | The Application layer encapsulates the application's business logic and use cases, depending solely on the Core layer to maintain separation from infrastructure concerns. |
+| Core | PlantTracker.Core.csproj | The Core layer defines the shared interfaces and domain models used across all layers, serving as the architectural foundation. |
+| Infrastructure | PlantTracker.Infrastructure.csproj | The Infrastructure layer contains implementations for external systems the application relies on, such as databases, APIs, caches, and file storage. |
+| Presentation | PlantTracker.WebApi.csproj | The presentation layer is exposed to consumers and contains controllers, middleware (authentication, error handling), dependency injection configuration, and project initialization. |
+<hr/>
 
 ### Project Structure and Dependencies
 
 #### Project Structure Overview
-This high level folder sturcture of the solution shows the code is seperated into two main folders src and test. Supporting directories include docker, data, and scripts.
+
+The high-level folder structure demonstrates clear separation of concerns, organizing the solution into two primary directories: src for source code and test for testing projects. Additional supporting directories include docker for containerization, data for seed files or schemas, and scripts for automation and utility tasks.
 
 ```
 dotnet-api-clean-architecture/
@@ -61,17 +64,19 @@ dotnet-api-clean-architecture/
 
 #### Project Dependency Diagram
 
- This graph shows the dependencies between the main source projects. Note that all projects depend on the Core layer. The WebApi layer depends on all layers only for dependency injection purposes.
+This dependency graph illustrates the relationships between the main source projects. Notice that all layers depend on the Core layer, which contains the shared interfaces and contracts. The WebApi layer (presentation) references all other layers solely for dependency injection configuration, maintaining the architectural principle that higher-level layers don't directly invoke lower-level implementations.
  
  ![Dependency Diagram](./docs/images/ProjectDependencyDiagram.png)
 
+<hr/>
+
 ## PlantTracker Web Api
 
-The PlantTracker Web Api provides CRUD operations for a plant table in DynamoDB. Authentication and Auorization is enabled using JWT tokens. A Global Error Handler returns a Problem Details object to prevent exposure of internal informaiton or stack traces.
+The PlantTracker Web API provides full CRUD operations for managing plant records in DynamoDB. Security is implemented through JWT token-based authentication and authorization. A global error handler ensures that all responses return standardized Problem Details objects while preventing exposure of sensitive internal information or stack traces.
 
 ### API Endpoints
 
-The table below contains the API endpoints that have been made available. Endpoints are also documentation in OpenApi in the PlantTracker.WebApi.json file. When running the API, Scalar is also available for use.
+The table below lists the available Web API endpoints. Complete endpoint documentation is also available in the OpenAPI specification file (PlantTracker.WebApi.json) and through the interactive Scalar UI that launches automatically when running the Web API.
 
 | Method | Endpoint | Description | Authentication Required | Authorization Admin Role Required |
 |--------|----------------|----------------|-----|----|
@@ -83,6 +88,8 @@ The table below contains the API endpoints that have been made available. Endpoi
 
 
 ### Plant Table
+
+The table below outlines the Plant table schema, including column names, data types, and whether each column is required.
 
 | Column | Data Type | Description | Required |
 |--------|----------------|----------------|---- |
@@ -96,6 +103,17 @@ The table below contains the API endpoints that have been made available. Endpoi
 
 ### Authentication
 
-This API uses JWT Authentication. To generate a jwt token for this API, please reference and use the [dotnet-api-identity](https://github.com/ckonkol1/dotnet-api-identity) API.
+This Web API uses JWT authentication for secure access. To generate a JWT token for testing and accessing protected endpoints, please reference and use the [dotnet-api-identity](https://github.com/ckonkol1/dotnet-api-identity) Api. 
 
 ## Local Development
+
+Running the Web Api locally can be accomplished by installing Docker Desktop and executing the Docker Compose file. This creates a local DynamoDB database and automatically populates it with sample data. After launching the Api in your preferred IDE, you can test endpoints using the OpenApi Scalar UI, the PlantTracker.http file, or any HTTP testing tool.
+
+### Requirements
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+### Steps to Run the Web API locally
+1. Clone or Fork the repository
+2. Navigate to the project root directory via the command line and run ```docker compose up```. This will run the \dotnet-api-clean-architecture\local\scripts\init-dynamodb.sh script and utilitze the \dotnet-api-clean-architecture\local\data\plants-seed-data.json to populate the database with sample data. You may also access the [DynamoDB Admin UI](http://localhost:8001/)
+3. Build and launch the Web API.
+4. Use the \dotnet-api-clean-architecture\src\PlantTracker.WebApi\PlantTracker.http file or the [OpenAPI Scalar UI](https://localhost:7205/scalar/v1) to access the endpoints.
