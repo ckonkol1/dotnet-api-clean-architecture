@@ -18,9 +18,11 @@ namespace PlantTracker.WebApi.Controllers;
 public class PlantsController(IPlantService plantService) : ControllerBase
 {
     /// <summary>
-    /// Get All Plants
+    /// GetAllPlants
+    ///
+    /// Returns all plants
     /// </summary>
-    /// <returns>A list of all the Plants</returns>
+    /// <returns>List of PlantResponseModel objects</returns>
     [EndpointSummary("Get All Plants")]
     [EndpointDescription("This endpoint returns all plants stored in the database")]
     [EndpointName("GetAllPlants")]
@@ -44,9 +46,11 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
+    /// GetPlantById
+    ///
     /// Get Plant By Id
     /// </summary>
-    /// <returns>A list of all the Plants</returns>
+    /// <returns>PlantResponseModel object</returns>
     [EndpointSummary("Get Plant by Id")]
     [EndpointDescription("This endpoint returns a plant with the provided Id")]
     [EndpointName("GetPlantById")]
@@ -79,9 +83,11 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
-    /// Create Plant
+    /// CreatePlantAsync
+    ///
+    /// Creates a new Plant
     /// </summary>
-    /// <returns>Id of Plant</returns>
+    /// <returns>string guid Id of the new Plant</returns>
     [EndpointSummary("Create Plant")]
     [EndpointDescription("Creates a Plant")]
     [EndpointName("CreatePlant")]
@@ -98,9 +104,11 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
-    /// Update Plant by Id
+    /// UpdatePlantById
+    ///
+    /// Updates a Plant by Id
     /// </summary>
-    /// <returns>Returns a single plant with provided Id</returns>
+    /// <returns>PlantResponseModel object of updated plant</returns>
     [EndpointSummary("Updates Plant")]
     [EndpointDescription("Updates plant by id")]
     [EndpointName("UpdatePlantById")]
@@ -130,9 +138,10 @@ public class PlantsController(IPlantService plantService) : ControllerBase
     }
 
     /// <summary>
-    /// Delete Plant
+    /// DeletePlantById
+    /// 
+    /// Hard Deletes a Plant by Id
     /// </summary>
-    /// <returns>l</returns>
     [EndpointSummary("Delete Plant")]
     [EndpointDescription("Deletes a Plant by id")]
     [EndpointName("DeletePlantById")]

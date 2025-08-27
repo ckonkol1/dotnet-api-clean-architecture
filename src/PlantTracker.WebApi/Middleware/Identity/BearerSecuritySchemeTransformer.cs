@@ -4,6 +4,12 @@ using Microsoft.OpenApi.Models;
 
 namespace PlantTracker.WebApi.Middleware.Identity;
 
+/// <summary>
+/// BearerSecuritySchemeTransformer
+///
+/// This class provides OpenApi Scalar the ability to set the Authentication bearer token in the UI for all endpoint calls during a given session
+/// </summary>
+/// <param name="authenticationSchemeProvider"></param>
 internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)

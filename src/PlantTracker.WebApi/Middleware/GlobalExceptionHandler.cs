@@ -18,23 +18,17 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 
         var problemDetails = exception switch
         {
-            JsonException => new ProblemDetails
-            {
-                Title = "Invalid Request Body Format",
-                Detail = "The submitted data is malformed or does not match the expected structure.",
-                Status = StatusCodes.Status400BadRequest
-            },
             ArgumentException => new ProblemDetails
             {
                 Status = 400,
                 Title = "Invalid Argument Provided",
                 Detail = exception.Message
             },
-            ValidationException => new ProblemDetails
+            JsonException => new ProblemDetails
             {
-                Status = 400,
-                Title = "Validation Error",
-                Detail = exception.Message
+                Title = "Invalid Request Body Format",
+                Detail = "The submitted data is malformed or does not match the expected structure.",
+                Status = StatusCodes.Status400BadRequest
             },
             MappingException => new ProblemDetails
             {
@@ -52,6 +46,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized Access",
+                Detail = exception.Message
+            },
+            ValidationException => new ProblemDetails
+            {
+                Status = 400,
+                Title = "Validation Error",
                 Detail = exception.Message
             },
             _ => new ProblemDetails()

@@ -9,8 +9,8 @@
           "Age": {"N": "3"},
           "Duration": {"S":"Perennial"},
           "Url": {"S": "https://plants.usda.gov/plant-profile/CAZE"},
-          "CreatedDateUtc": {"S": "2025-01-15T10:00:00Z"},
-          "ModifiedDateUtc": {"S": "2025-01-15T10:00:00Z"}
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
         }
       }
     },
@@ -23,8 +23,8 @@
           "Age": {"N": "2"},
           "Duration": {"S":"Perennial"},
           "Url": {"S": "https://plants.usda.gov/plant-profile/ECCOA"},
-          "CreatedDateUtc": {"S": "2025-01-15T10:00:00Z"},
-          "ModifiedDateUtc": {"S": "2025-01-15T10:00:00Z"}
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
         }
       }
     },
@@ -37,8 +37,8 @@
           "Age": {"N": "1"},
           "Duration": {"S":"Perennial"},
           "Url": {"S": "https://plants.usda.gov/plant-profile/FICA"},
-          "CreatedDateUtc": {"S": "2025-01-15T10:00:00Z"},
-          "ModifiedDateUtc": {"S": "2025-01-15T10:00:00Z"}
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
         }
       }
     }

@@ -6,7 +6,7 @@ namespace PlantTracker.Application.Services;
 /// <summary>
 /// PlantService
 ///
-/// Makes calls to the IPlantRepository perform Create, Read, Update, Delete operations
+/// Makes calls to the IPlantRepository to perform Create, Read, Update, Delete operations
 /// </summary>
 /// <param name="plantRepository"></param>
 public class PlantService(IPlantRepository plantRepository) : IPlantService

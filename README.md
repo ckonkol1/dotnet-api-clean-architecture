@@ -103,7 +103,7 @@ The table below outlines the Plant table schema, including column names, data ty
 
 ### Authentication
 
-This Web API uses JWT authentication for secure access. To generate a JWT token for testing and accessing protected endpoints, please reference and use the [dotnet-api-identity](https://github.com/ckonkol1/dotnet-api-identity) Api. 
+This Web API uses JWT authentication for secure access. To generate a JWT token for testing and accessing protected endpoints, please reference and use the [dotnet-api-identity](https://github.com/ckonkol1/dotnet-api-identity) Web Api. 
 
 ## Local Development
 
@@ -115,5 +115,6 @@ Running the Web Api locally can be accomplished by installing Docker Desktop and
 ### Steps to Run the Web API locally
 1. Clone or Fork the repository
 2. Navigate to the project root directory via the command line and run ```docker compose up```. This will run the \dotnet-api-clean-architecture\local\scripts\init-dynamodb.sh script and utilitze the \dotnet-api-clean-architecture\local\data\plants-seed-data.json to populate the database with sample data. You may also access the [DynamoDB Admin UI](http://localhost:8001/)
-3. Build and launch the Web API.
-4. Use the \dotnet-api-clean-architecture\src\PlantTracker.WebApi\PlantTracker.http file or the [OpenAPI Scalar UI](https://localhost:7205/scalar/v1) to access the endpoints.
+3. Build, Launch, and obtain a JWT token from the [dotnet-api-identity](https://github.com/ckonkol1/dotnet-api-identity)
+4. Build and launch the PlantTracker Web API.
+5. Use the \dotnet-api-clean-architecture\src\PlantTracker.WebApi\PlantTracker.http file or the [OpenAPI Scalar UI](https://localhost:7205/scalar/v1) to access the endpoints.
