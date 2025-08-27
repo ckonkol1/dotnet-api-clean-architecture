@@ -6,20 +6,48 @@ using PlantTracker.Infrastructure.Models;
 
 namespace PlantTracker.Infrastructure.Repositories;
 
+/// <summary>
+/// PlantRepository
+///
+/// Preforms Create, read, update, delete operations on a DynamoDB database
+/// </summary>
+/// <param name="dynamoDbContext"></param>
+/// <param name="timeProvider"></param>
 public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider timeProvider) : IPlantRepository
 {
+    /// <summary>
+    /// GetAllPlantsAsync
+    ///
+    /// Returns all plants in the Plant table from the DynamoDB database
+    /// </summary>
+    /// <returns>List of PlantModel objects</returns>
     public async Task<IEnumerable<PlantModel>> GetAllPlantsAsync()
     {
         var plants = await dynamoDbContext.ScanAsync<PlantEntity>(new List<ScanCondition>()).GetRemainingAsync();
         return plants.Select(p => p.ToPlantModel()).ToList();
     }
 
+    /// <summary>
+    /// GetPlantByIdAsync
+    ///
+    /// Returns a plant by given plant id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>PlantModel object</returns>
     public async Task<PlantModel?> GetPlantByIdAsync(Guid id)
     {
         var plant = await dynamoDbContext.LoadAsync<PlantEntity>(id.ToString(), CancellationToken.None);
         return plant?.ToPlantModel();
     }
 
+    /// <summary>
+    /// UpdatePlantAsync
+    /// 
+    /// Updates existing plant in the Plant table from the DynamoDB database
+    /// </summary>
+    /// <param name="updatedPlant">PlantModel object</param>
+    /// <returns>Updated PlantModel object</returns>
+    /// <exception cref="ResourceNotFoundException">Throws when the Id of the plant was not found in the DynamoDB database</exception>
     public async Task<PlantModel> UpdatePlantAsync(PlantModel updatedPlant)
     {
         var originalPlantWithUpdates = await GetPlantByIdAsync(updatedPlant.Id);
@@ -69,6 +97,13 @@ public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider time
         return plantEntity.ToPlantModel();
     }
 
+    /// <summary>
+    /// CreatePlantAsync
+    /// 
+    /// Creates a new plant object in the Plant table in the DynamoDB Database
+    /// </summary>
+    /// <param name="plant">PlantModel Object</param>
+    /// <return>Guid Id of type string</return>
     public async Task<string> CreatePlantAsync(PlantModel plant)
     {
         var plantEntity = new PlantEntity()
@@ -87,6 +122,12 @@ public class PlantRepository(IDynamoDBContext dynamoDbContext, TimeProvider time
         return plantEntity.Id;
     }
 
+    /// <summary>
+    /// DeletePlantAsync
+    ///
+    /// Hard Deletes plant by Id in the Plant table in the DynamoDB Database
+    /// </summary>
+    /// <param name="id">Guid of plant id</param>
     public async Task DeletePlantAsync(Guid id)
     {
         await dynamoDbContext.DeleteAsync<PlantEntity>(id.ToString(), CancellationToken.None);
