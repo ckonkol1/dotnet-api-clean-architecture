@@ -1,0 +1,46 @@
+{
+  "Plants": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "27c74312-ee9f-4105-9670-5bb51f135780"},
+          "CommonName": {"S": "Zebra Plant"},
+          "ScientificName": {"S": "Calathea zebrina"},
+          "Age": {"N": "3"},
+          "Duration": {"S":"Perennial"},
+          "Url": {"S": "https://plants.usda.gov/plant-profile/CAZE"},
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "5bc5a50e-3b48-4c50-bd71-fc3323bd755e"},
+          "CommonName": {"S": "Arizona hedgehog cactus"},
+          "ScientificName": {"S": "Echinocereus coccineus Engelm"},
+          "Age": {"N": "2"},
+          "Duration": {"S":"Perennial"},
+          "Url": {"S": "https://plants.usda.gov/plant-profile/ECCOA"},
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "1f4820b1-21a6-4fe4-8dad-b886fab90f8b"},
+          "CommonName": {"S": "edible fig"},
+          "ScientificName": {"S": "Ficus carica"},
+          "Age": {"N": "1"},
+          "Duration": {"S":"Perennial"},
+          "Url": {"S": "https://plants.usda.gov/plant-profile/FICA"},
+          "CreatedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"},
+          "ModifiedDateUtc": {"S": "2025-08-24T21:21:26.2357+00:00"}
+        }
+      }
+    }
+  ]
+}
