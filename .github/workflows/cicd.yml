@@ -10,7 +10,7 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  SOLUTION_DIR: './src/PlantTracker.sln'
+  SOLUTION_DIR: './PlantTracker.sln'
 
 jobs:
   test:
